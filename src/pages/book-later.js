@@ -1,6 +1,6 @@
 // src/pages/book-later.js
 import React from 'react';
-import '../styles/globals.css';
+
 import Link from 'next/link';
 
 export default function BookLater() {

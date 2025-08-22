@@ -1,6 +1,6 @@
 // src/pages/index.js
 import React, { useState } from 'react';
-import '../styles/globals.css';
+
 import Link from 'next/link';
 
 export default function Home() {

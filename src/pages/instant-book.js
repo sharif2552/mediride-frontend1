@@ -1,6 +1,5 @@
 // src/pages/instant-book.js
 import React from 'react';
-import '../styles/globals.css';
 import Link from 'next/link';
 
 export default function InstantBook() {
