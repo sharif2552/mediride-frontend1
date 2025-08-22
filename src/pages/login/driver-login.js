@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router'; // Importing the useRouter hook
-import '../../styles/globals.css';
+
 
 export default function DriverLogin() {
   const [otpSent, setOtpSent] = useState(false);

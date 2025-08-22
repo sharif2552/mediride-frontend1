@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
-import '../../styles/globals.css';
+
 
 export default function SelfVerification() {
   const [isClient, setIsClient] = useState(false);

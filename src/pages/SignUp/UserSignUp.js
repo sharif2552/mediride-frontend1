@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import '../../styles/globals.css'; // Adjusted path to reach globals.css
+// Adjusted path to reach globals.css
 
 export default function UserSignUp() {
   return (
