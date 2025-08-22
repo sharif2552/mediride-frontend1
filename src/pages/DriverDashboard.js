@@ -1,7 +1,5 @@
-// src/pages/driver-dashboard.js
 import React, { useState } from 'react';
 import Link from 'next/link';
-import '../styles/globals.css';
 
 export default function DriverDashboard() {
   // Sample schedule data for the driver
