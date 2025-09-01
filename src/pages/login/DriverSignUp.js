@@ -1,16 +1,32 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-export default function UserSignUp() {
+function Tagline() {
+  const [text, setText] = useState("");
+
+  useEffect(() => {
+    // Detect browser language and set tagline on client
+    const lang = navigator.language || "en";
+    if (lang.startsWith("bn")) {
+      setText("আপনার প্রয়োজন, আমাদের অগ্রাধিকার, যে কোনো সময়, কোথাও, প্রস্তুত");
+    } else {
+      setText("Drive with pride, serve with care. Ready anytime, anywhere.");
+    }
+  }, []);
+
+  return <p className="tagline">{text}</p>;
+}
+
+export default function DriverSignUp() {
   const router = useRouter();
 
   const [formData, setFormData] = useState({
     full_name: "",
     email: "",
     phone_number: "",
-    district_id: 1,
+    license_number: "",
     password: "",
     password_confirm: "",
   });
@@ -21,7 +37,7 @@ export default function UserSignUp() {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "district_id" ? Number(value) : value,
+      [name]: value,
     }));
   };
 
@@ -35,19 +51,14 @@ export default function UserSignUp() {
     }
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/accounts/register/user/", {
+      const res = await fetch("http://127.0.0.1:8000/accounts/register/driver/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
-      console.log("Signup response status:", res.status);
-
-      if (res.status === 200 || res.status === 201) {
-        // ✅ redirect to OTP verify page with email in query
-        router.replace(
-          `/login/userOtpVerify?email=${encodeURIComponent(formData.email)}`
-        );
+      if (res.ok) {
+        router.replace("/login/driverLogin");
       } else {
         const errorData = await res.json().catch(() => null);
         setError(errorData ? JSON.stringify(errorData) : "Registration failed");
@@ -62,9 +73,7 @@ export default function UserSignUp() {
       {/* Left Panel */}
       <section className="left-panel">
         <img src="/assets/logo.png" alt="MEDIRIDE Logo" className="logo" />
-        <p className="tagline">
-          Your need, Our priority, Ready to Response, Anytime Anywhere
-        </p>
+        <Tagline />
         <button className="primary-btn">
           <img src="/assets/call-icon.png" alt="Call Icon" className="icon" />
           Call Now
@@ -75,7 +84,7 @@ export default function UserSignUp() {
       <section className="right-panel">
         <div className="login-header">
           <h1 className="welcome">
-            Create <span className="highlight">Account</span>
+            Driver <span className="highlight">Sign Up</span>
           </h1>
           <img
             src="/assets/logo.png"
@@ -94,7 +103,7 @@ export default function UserSignUp() {
               name="full_name"
               value={formData.full_name}
               onChange={handleChange}
-              placeholder="Enter your full name"
+              placeholder="Enter full name"
               required
             />
           </div>
@@ -106,7 +115,7 @@ export default function UserSignUp() {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="Enter your email"
+              placeholder="Enter email"
               required
             />
           </div>
@@ -118,23 +127,21 @@ export default function UserSignUp() {
               name="phone_number"
               value={formData.phone_number}
               onChange={handleChange}
-              placeholder="Enter your phone number"
+              placeholder="Enter phone number"
               required
             />
           </div>
 
           <div className="form-group">
-            <label>District</label>
-            <select
-              name="district_id"
-              value={formData.district_id}
+            <label>License Number</label>
+            <input
+              type="text"
+              name="license_number"
+              value={formData.license_number}
               onChange={handleChange}
+              placeholder="Enter license number"
               required
-            >
-              <option value={1}>District 1</option>
-              <option value={2}>District 2</option>
-              <option value={3}>District 3</option>
-            </select>
+            />
           </div>
 
           <div className="form-group">
@@ -165,8 +172,8 @@ export default function UserSignUp() {
             Register
           </button>
 
-          <Link href="/login/userLogin" className="back-login-btn">
-            ← Back to Login
+          <Link href="/login/driverLogin" className="back-login-btn">
+            ← Back to Driver Login
           </Link>
         </form>
       </section>

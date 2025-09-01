@@ -1,107 +1,116 @@
-// src/pages/login/driver-login.js
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/router'; // Importing the useRouter hook
-
+"use client";
+import React, { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function DriverLogin() {
-  const [otpSent, setOtpSent] = useState(false);
-  const [mobileNumber, setMobileNumber] = useState('');
-  const [otp, setOtp] = useState('');
-  const router = useRouter(); // Initializing the router
+  const router = useRouter();
 
-  const handleSendOtp = () => {
-    setOtpSent(true);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [error, setError] = useState(null);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  const handleLogin = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // You can add validation here for OTP and mobile number
-    if (mobileNumber && otp) {
-      // If login is successful, navigate to the Driver Dashboard
-      router.push('/DriverDashboard'); // Redirect to DriverDashboard
-    } else {
-      alert('Please enter both mobile number and OTP');
+    setError(null);
+
+    try {
+      const res = await fetch("http://127.0.0.1:8000/accounts/login/user/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+
+        // Store token in localStorage (or cookies if you prefer)
+        localStorage.setItem("driverToken", data.access || data.token);
+
+        // Redirect to driver dashboard (adjust path as needed)
+        router.replace("/driver/dashboard");
+      } else {
+        const errorData = await res.json().catch(() => null);
+        setError(errorData ? JSON.stringify(errorData) : "Login failed");
+      }
+    } catch (err) {
+      setError("Request failed: " + err.message);
     }
   };
 
   return (
     <div className="container">
-      {/* Left Panel - reused from index.js */}
+      {/* Left Panel */}
       <section className="left-panel">
         <img src="/assets/logo.png" alt="MEDIRIDE Logo" className="logo" />
         <p className="tagline">
-          আপনার প্রয়োজন, আমাদের অগ্রাধিকার, যে কোন সময়, কোথাও, প্রস্তুত
+          Welcome back, drive safe and serve with care.
         </p>
         <button className="primary-btn">
           <img src="/assets/call-icon.png" alt="Call Icon" className="icon" />
-          কল করুন
+          Call Now
         </button>
       </section>
 
-      {/* Right Panel - Driver Login Form */}
+      {/* Right Panel */}
       <section className="right-panel">
         <div className="login-header">
           <h1 className="welcome">
-            MEDIRIDE-এ স্বাগতম <span className="highlight">ড্রাইভার</span>
+            Driver <span className="highlight">Login</span>
           </h1>
-          <img src="/assets/logo.png" alt="MEDIRIDE Logo" className="login-logo" />
+          <img
+            src="/assets/logo.png"
+            alt="MEDIRIDE Logo"
+            className="login-logo"
+          />
         </div>
 
-        <form className="form-grid" onSubmit={handleLogin}>
+        {error && <p className="error">{error}</p>}
+
+        <form className="form-grid" onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>মোবাইল নম্বর</label>
+            <label>Email</label>
             <input
-              type="text"
-              placeholder="আপনার মোবাইল নম্বর লিখুন"
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Enter your email"
               required
-              value={mobileNumber}
-              onChange={(e) => setMobileNumber(e.target.value)} // Set mobile number state
             />
           </div>
 
-          {!otpSent ? (
-            <button
-              type="button"
-              onClick={handleSendOtp}
-              className="secondary-btn login-btn"
-            >
-              OTP পাঠান
-            </button>
-          ) : (
-            <div className="form-group">
-              <label>OTP</label>
-              <input
-                type="text"
-                placeholder="আপনার OTP কোড লিখুন"
-                required
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)} // Set OTP state
-              />
-              <button type="submit" className="secondary-btn login-btn">
-                লগ ইন করুন
-              </button>
-            </div>
-          )}
-
-          <div className="social-buttons">
-            <button className="social-btn fb-btn">
-              <img src="/assets/facebook.png" alt="Facebook Icon" className="social-icon" />
-              Facebook দিয়ে প্রবেশ করুন
-            </button>
-            <button className="social-btn google-btn">
-              <img src="/assets/google.png" alt="Google Icon" className="social-icon" />
-              Google দিয়ে প্রবেশ করুন
-            </button>
+          <div className="form-group">
+            <label>Password</label>
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Enter password"
+              required
+            />
           </div>
-        </form>
 
-        {/* Home Button */}
-        <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
-          <Link href="/" passHref legacyBehavior>
-            <a className="secondary-btn back-home-btn">← হোমে ফিরে যান</a>
+          <button type="submit" className="secondary-btn login-btn">
+            Login
+          </button>
+
+          <Link href="/signup/driverSignUp" className="back-login-btn">
+            ← Back to Driver Sign Up
           </Link>
-        </div>
+        </form>
       </section>
     </div>
   );

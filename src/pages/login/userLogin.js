@@ -1,12 +1,41 @@
-// src/page/login/userLogin.js
-import React from 'react';
-import Link from 'next/link';
-
+"use client";
+import React, { useState } from "react";
+import Link from "next/link";
 
 export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await fetch("http://127.0.0.1:8000/accounts/login/user/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Login failed");
+      }
+
+      const data = await res.json();
+      console.log("Login success:", data);
+
+      // Example: store token in localStorage
+      localStorage.setItem("token", data.token);
+
+      // Redirect if needed
+      window.location.href = "/";
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
   return (
     <div className="container">
-      {/* Left Panel - reused from index.js */}
+      {/* Left Panel */}
       <section className="left-panel">
         <img src="/assets/logo.png" alt="MEDIRIDE Logo" className="logo" />
         <p className="tagline">
@@ -18,27 +47,44 @@ export default function Login() {
         </button>
       </section>
 
-      {/* Right Panel - Login Form */}
+      {/* Right Panel */}
       <section className="right-panel">
         <div className="login-header">
           <h1 className="welcome">
-            Welcome to <span className="highlight">MEDI<span className="ride">RIDE</span></span>
+            Welcome to{" "}
+            <span className="highlight">
+              MEDI<span className="ride">RIDE</span>
+            </span>
           </h1>
           <img src="/assets/logo.png" alt="MEDIRIDE Logo" className="login-logo" />
         </div>
 
-        <form className="form-grid">
+        <form className="form-grid" onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Email</label>
-            <input type="email" placeholder="Enter your email" required />
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </div>
 
           <div className="form-group">
             <label>Password</label>
-            <input type="password" placeholder="Enter your password" required />
+            <input
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
           </div>
 
-          <button type="submit" className="secondary-btn login-btn">Log in</button>
+          <button type="submit" className="secondary-btn login-btn">
+            Log in
+          </button>
 
           <div className="inline-buttons">
             <button type="button" className="red-btn">Forgot Password?</button>
@@ -48,8 +94,7 @@ export default function Login() {
           </div>
         </form>
 
-        {/* Home Button */}
-        <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+        <div style={{ marginTop: "1.5rem", textAlign: "center" }}>
           <Link href="/" passHref legacyBehavior>
             <a className="secondary-btn back-home-btn">← Back to Home</a>
           </Link>
