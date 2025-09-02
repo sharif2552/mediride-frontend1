@@ -11,8 +11,13 @@ export default function Home() {
 
   // Check authentication status on component mount
   useEffect(() => {
+    // Check for regular user authentication
     const token = localStorage.getItem("token");
     const userData = localStorage.getItem("user");
+    
+    // Check for driver authentication
+    const driverToken = localStorage.getItem("driverToken");
+    const driverData = localStorage.getItem("driver");
     
     if (token && userData) {
       try {
@@ -24,6 +29,17 @@ export default function Home() {
         // Clear invalid data
         localStorage.removeItem("token");
         localStorage.removeItem("user");
+      }
+    } else if (driverToken && driverData) {
+      try {
+        const parsedDriver = JSON.parse(driverData);
+        setUser(parsedDriver);
+        setIsLoggedIn(true);
+      } catch (err) {
+        console.error("Error parsing driver data:", err);
+        // Clear invalid data
+        localStorage.removeItem("driverToken");
+        localStorage.removeItem("driver");
       }
     }
   }, []);
@@ -41,9 +57,16 @@ export default function Home() {
 
   // Handle logout
   const handleLogout = () => {
+    // Clear regular user data
     localStorage.removeItem("token");
     localStorage.removeItem("refresh_token");
     localStorage.removeItem("user");
+    
+    // Clear driver data
+    localStorage.removeItem("driverToken");
+    localStorage.removeItem("driverRefreshToken");
+    localStorage.removeItem("driver");
+    
     setUser(null);
     setIsLoggedIn(false);
     setDropdownVisible(false);
@@ -87,20 +110,50 @@ export default function Home() {
                 </button>
                 {dropdownVisible && (
                   <div className="dropdown">
-                    <Link
-                      href="/profile"
-                      className="dropdown-item"
-                      onClick={() => setDropdownVisible(false)}
-                    >
-                      👤 View Profile
-                    </Link>
-                    <Link
-                      href="/BookList"
-                      className="dropdown-item"
-                      onClick={() => setDropdownVisible(false)}
-                    >
-                      📋 My Bookings
-                    </Link>
+                    {user?.user_type === 'driver' ? (
+                      // Driver-specific menu items
+                      <>
+                        <Link
+                          href="/driver/dashboard"
+                          className="dropdown-item"
+                          onClick={() => setDropdownVisible(false)}
+                        >
+                          🚗 Driver Dashboard
+                        </Link>
+                        <Link
+                          href="/driver/dashboard-bidding"
+                          className="dropdown-item"
+                          onClick={() => setDropdownVisible(false)}
+                        >
+                          💰 My Bids
+                        </Link>
+                        <Link
+                          href="/profile"
+                          className="dropdown-item"
+                          onClick={() => setDropdownVisible(false)}
+                        >
+                          👤 View Profile
+                        </Link>
+                      </>
+                    ) : (
+                      // Regular user menu items
+                      <>
+                        <Link
+                          href="/profile"
+                          className="dropdown-item"
+                          onClick={() => setDropdownVisible(false)}
+                        >
+                          👤 View Profile
+                        </Link>
+                        <Link
+                          href="/BookList"
+                          className="dropdown-item"
+                          onClick={() => setDropdownVisible(false)}
+                        >
+                          📋 My Bookings
+                        </Link>
+                      </>
+                    )}
                     <button
                       className="dropdown-item logout-item"
                       onClick={handleLogout}
