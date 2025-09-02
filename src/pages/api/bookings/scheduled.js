@@ -1,4 +1,4 @@
-// Next.js API route for instant bookings
+// Next.js API route for scheduled bookings
 // This proxies requests to the Django backend
 
 export default async function handler(req, res) {
@@ -10,7 +10,7 @@ export default async function handler(req, res) {
     // Replace with your actual Django backend URL
     const backendUrl = process.env.BACKEND_URL || 'http://127.0.0.1:8000';
     
-    const response = await fetch(`${backendUrl}/api/bookings/instant/`, {
+    const response = await fetch(`${backendUrl}/api/bookings/scheduled/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

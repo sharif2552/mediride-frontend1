@@ -58,7 +58,7 @@ export default function DriverSignUp() {
       });
 
       if (res.ok) {
-        router.replace("/login/driverLogin");
+        router.replace("/login/driver-login");
       } else {
         const errorData = await res.json().catch(() => null);
         setError(errorData ? JSON.stringify(errorData) : "Registration failed");
@@ -172,7 +172,7 @@ export default function DriverSignUp() {
             Register
           </button>
 
-          <Link href="/login/driverLogin" className="back-login-btn">
+          <Link href="/login/driver-login" className="back-login-btn">
             ← Back to Driver Login
           </Link>
         </form>

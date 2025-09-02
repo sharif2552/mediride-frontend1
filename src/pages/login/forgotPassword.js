@@ -1,13 +1,15 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-export default function Login() {
+export default function ForgotPassword() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [resetCode, setResetCode] = useState(""); // Store reset code separately
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,46 +19,45 @@ export default function Login() {
 
     try {
       const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000";
-      const res = await fetch(`${API_BASE_URL}/accounts/login/user/`, {
+      const res = await fetch(`${API_BASE_URL}/accounts/forgot-password/`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
           "Accept": "application/json"
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email }),
       });
 
       const data = await res.json();
+      console.log("Forgot password response:", data); // Debug log
 
-      if (!res.ok) {
+      if (res.ok) {
+        // In development mode, show the reset code if returned
+        if (data.reset_code) {
+          setSuccess("Password reset code generated successfully!");
+          setResetCode(data.reset_code);
+          // Also log it for easy copying
+          console.log(`🔑 Reset code for ${email}: ${data.reset_code}`);
+          alert(`Your reset code is: ${data.reset_code}\n\nCopy this code for the next page!`);
+        } else {
+          setSuccess("Password reset code sent to your email. Please check your inbox.");
+        }
+        
+        // Redirect to reset password page after 5 seconds (more time to see the code)
+        setTimeout(() => {
+          router.push(`/login/resetPassword?email=${encodeURIComponent(email)}`);
+        }, 5000);
+      } else {
+        console.error("Forgot password error:", data); // Debug log
         // Handle specific error messages from backend
         if (data.email) {
           setError(data.email[0]);
-        } else if (data.password) {
-          setError(data.password[0]);
-        } else if (data.non_field_errors) {
-          setError(data.non_field_errors[0]);
+        } else if (data.error) {
+          setError(data.error);
         } else {
-          setError(data.message || "Login failed. Please check your credentials.");
+          setError(data.message || "Failed to send reset code. Please try again.");
         }
-        return;
       }
-
-      console.log("Login success:", data);
-      setSuccess("Login successful! Redirecting...");
-
-      // Store the access token from the correct response structure
-      if (data.tokens && data.tokens.access) {
-        localStorage.setItem("token", data.tokens.access);
-        localStorage.setItem("refresh_token", data.tokens.refresh);
-        localStorage.setItem("user", JSON.stringify(data.user));
-      }
-
-      // Redirect after a short delay to show success message
-      setTimeout(() => {
-        window.location.href = "/";
-      }, 1500);
-
     } catch (err) {
       console.error("Network error:", err);
       setError("Network error. Please check your connection and try again.");
@@ -83,11 +84,11 @@ export default function Login() {
       <section className="right-panel">
         <div className="login-header">
           <h1 className="welcome">
-            Welcome to{" "}
-            <span className="highlight">
-              MEDI<span className="ride">RIDE</span>
-            </span>
+            Forgot <span className="highlight">Password?</span>
           </h1>
+          <p style={{ color: "#666", marginTop: "0.5rem", fontSize: "14px" }}>
+            Enter your email address and we'll send you a reset code
+          </p>
           <img src="/assets/logo.png" alt="MEDIRIDE Logo" className="login-logo" />
         </div>
 
@@ -104,25 +105,21 @@ export default function Login() {
             </div>
           )}
 
-          <div className="form-group">
-            <label>Email</label>
-            <input
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              disabled={isLoading}
-            />
-          </div>
+          {resetCode && (
+            <div className="reset-code-display">
+              <h3>🔑 Your Reset Code:</h3>
+              <div className="reset-code">{resetCode}</div>
+              <p>Copy this code to use on the next page!</p>
+            </div>
+          )}
 
           <div className="form-group">
-            <label>Password</label>
+            <label>Email Address</label>
             <input
-              type="password"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              type="email"
+              placeholder="Enter your registered email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
               disabled={isLoading}
             />
@@ -133,15 +130,15 @@ export default function Login() {
             className="secondary-btn login-btn"
             disabled={isLoading}
           >
-            {isLoading ? "Logging in..." : "Log in"}
+            {isLoading ? "Sending..." : "Send Reset Code"}
           </button>
 
           <div className="inline-buttons">
-            <Link href="/login/forgotPassword" passHref legacyBehavior>
-              <a className="red-btn">Forgot Password?</a>
+            <Link href="/login/userLogin" passHref legacyBehavior>
+              <a className="green-btn">← Back to Login</a>
             </Link>
-            <Link href="/SignUp/UserSignUp" passHref legacyBehavior>
-              <a className="green-btn">Create an account</a>
+            <Link href={`/login/resetPassword?email=${encodeURIComponent(email)}`} passHref legacyBehavior>
+              <a className="blue-btn">Go to Reset →</a>
             </Link>
           </div>
         </form>

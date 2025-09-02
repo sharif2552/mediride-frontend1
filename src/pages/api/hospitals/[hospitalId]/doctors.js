@@ -1,34 +1,35 @@
-// Next.js API route for instant bookings
-// This proxies requests to the Django backend
-
+// src/pages/api/hospitals/[hospitalId]/doctors.js
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
+  const { method, query } = req;
+  const { hospitalId, ...restQuery } = query;
+  
+  if (method !== 'GET') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
   try {
-    // Replace with your actual Django backend URL
     const backendUrl = process.env.BACKEND_URL || 'http://127.0.0.1:8000';
+    const queryString = new URLSearchParams(restQuery).toString();
+    const url = `${backendUrl}/hospitals/hospitals/${hospitalId}/doctors/${queryString ? `?${queryString}` : ''}`;
     
-    const response = await fetch(`${backendUrl}/api/bookings/instant/`, {
-      method: 'POST',
+    const response = await fetch(url, {
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(req.body),
     });
 
     const data = await response.json();
 
     if (response.ok) {
-      res.status(201).json(data);
+      res.status(200).json(data);
     } else {
       res.status(response.status).json(data);
     }
   } catch (error) {
     console.error('Backend connection error:', error);
     res.status(500).json({ 
-      detail: 'Unable to connect to booking service. Please try again later.' 
+      detail: 'Unable to connect to doctor service. Please try again later.' 
     });
   }
 }
