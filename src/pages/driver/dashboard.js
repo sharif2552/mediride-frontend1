@@ -1,7 +1,7 @@
 "use client";
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { useRouter } from "next/router";
 
 export default function DriverDashboard() {
   const router = useRouter();
@@ -11,20 +11,20 @@ export default function DriverDashboard() {
   const [activeBooking, setActiveBooking] = useState(null);
   const [acceptingBooking, setAcceptingBooking] = useState(null);
   const [isDemoMode, setIsDemoMode] = useState(false);
-  const [activeTab, setActiveTab] = useState('available');
+  const [activeTab, setActiveTab] = useState("available");
   const [myBids, setMyBids] = useState([]);
   const [selectedBooking, setSelectedBooking] = useState(null);
-  const [bidAmount, setBidAmount] = useState('');
-  const [bidNote, setBidNote] = useState('');
+  const [bidAmount, setBidAmount] = useState("");
+  const [bidNote, setBidNote] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     // Check if driver is logged in
-    const driverData = localStorage.getItem('driver');
-    const token = localStorage.getItem('driverToken');
+    const driverData = localStorage.getItem("driver");
+    const token = localStorage.getItem("driverToken");
 
     if (!driverData || !token) {
-      router.push('/login/driver-login');
+      router.push("/login/driver-login");
       return;
     }
 
@@ -34,8 +34,8 @@ export default function DriverDashboard() {
       fetchBookings();
       fetchMyBids();
     } catch (error) {
-      console.error('Error parsing driver data:', error);
-      router.push('/login/driver-login');
+      console.error("Error parsing driver data:", error);
+      router.push("/login/driver-login");
     } finally {
       setIsLoading(false);
     }
@@ -43,27 +43,31 @@ export default function DriverDashboard() {
 
   const fetchBookings = async () => {
     try {
-      const token = localStorage.getItem('driverToken');
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000";
-      
-      const response = await fetch(`${apiBaseUrl}/api/bookings/available-for-drivers/`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const token = localStorage.getItem("driverToken");
+      const apiBaseUrl =
+        process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000";
+
+      const response = await fetch(
+        `${apiBaseUrl}/api/bookings/available-for-drivers/`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
-        setBookings(data.filter(booking => booking.status === 'pending'));
+        setBookings(data.filter((booking) => booking.status === "pending"));
         setIsDemoMode(false);
         return; // Successfully fetched from backend
       }
     } catch (error) {
       // Backend is not available, fall back to demo mode
-      console.log('Backend not available, using demo data');
+      console.log("Backend not available, using demo data");
     }
-    
+
     // Fallback to mock data for demo purposes (either due to error or non-ok response)
     setIsDemoMode(true);
     const mockBookings = [
@@ -76,7 +80,7 @@ export default function DriverDashboard() {
         booking_type: "Emergency",
         status: "pending",
         distance: 12.5,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       },
       {
         id: 2,
@@ -87,7 +91,7 @@ export default function DriverDashboard() {
         booking_type: "Scheduled",
         status: "pending",
         distance: 8.3,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       },
       {
         id: 3,
@@ -98,117 +102,130 @@ export default function DriverDashboard() {
         booking_type: "Emergency",
         status: "pending",
         distance: 15.7,
-        created_at: new Date().toISOString()
-      }
+        created_at: new Date().toISOString(),
+      },
     ];
-    
+
     setBookings(mockBookings);
   };
 
   const acceptBooking = async (bookingId) => {
     setAcceptingBooking(bookingId);
-    
+
     try {
-      const token = localStorage.getItem('driverToken');
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000";
-      
-      const response = await fetch(`${apiBaseUrl}/api/bookings/accept/${bookingId}/`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const token = localStorage.getItem("driverToken");
+      const apiBaseUrl =
+        process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000";
+
+      const response = await fetch(
+        `${apiBaseUrl}/api/bookings/accept/${bookingId}/`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (response.ok) {
-        const acceptedBooking = bookings.find(b => b.id === bookingId);
+        const acceptedBooking = bookings.find((b) => b.id === bookingId);
         setActiveBooking(acceptedBooking);
-        setBookings(bookings.filter(b => b.id !== bookingId));
-        alert('Booking accepted successfully!');
+        setBookings(bookings.filter((b) => b.id !== bookingId));
+        alert("Booking accepted successfully!");
         setAcceptingBooking(null);
         return;
       }
     } catch (error) {
-      console.log('Backend not available, using demo mode for booking acceptance');
+      console.log(
+        "Backend not available, using demo mode for booking acceptance"
+      );
     }
-    
+
     // Demo mode - simulate accepting booking
-    const acceptedBooking = bookings.find(b => b.id === bookingId);
+    const acceptedBooking = bookings.find((b) => b.id === bookingId);
     if (acceptedBooking) {
       // Update booking status to accepted
       const updatedBooking = {
         ...acceptedBooking,
-        status: 'accepted',
+        status: "accepted",
         driver_id: driver?.id || 1,
-        accepted_at: new Date().toISOString()
+        accepted_at: new Date().toISOString(),
       };
-      
+
       setActiveBooking(updatedBooking);
-      setBookings(bookings.filter(b => b.id !== bookingId));
-      alert('Booking accepted successfully! (Demo Mode)');
+      setBookings(bookings.filter((b) => b.id !== bookingId));
+      alert("Booking accepted successfully! (Demo Mode)");
     } else {
-      alert('Failed to accept booking - booking not found');
+      alert("Failed to accept booking - booking not found");
     }
-    
+
     setAcceptingBooking(null);
   };
 
   const completeBooking = async () => {
     if (!activeBooking) return;
-    
+
     try {
-      const token = localStorage.getItem('driverToken');
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000";
-      
-      const response = await fetch(`${apiBaseUrl}/api/bookings/complete/${activeBooking.id}/`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const token = localStorage.getItem("driverToken");
+      const apiBaseUrl =
+        process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000";
+
+      const response = await fetch(
+        `${apiBaseUrl}/api/bookings/complete/${activeBooking.id}/`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (response.ok) {
         setActiveBooking(null);
-        alert('Booking completed successfully!');
+        alert("Booking completed successfully!");
         fetchBookings(); // Refresh available bookings
         return;
       }
     } catch (error) {
-      console.log('Backend not available, using demo mode for booking completion');
+      console.log(
+        "Backend not available, using demo mode for booking completion"
+      );
     }
-    
+
     // Demo mode - simulate completing booking
     setActiveBooking(null);
-    alert('Booking completed successfully! (Demo Mode)');
+    alert("Booking completed successfully! (Demo Mode)");
     fetchBookings(); // Refresh available bookings
   };
 
   const contactPatient = (phoneNumber) => {
     if (phoneNumber) {
-      window.open(`tel:${phoneNumber}`, '_self');
+      window.open(`tel:${phoneNumber}`, "_self");
     } else {
-      alert('Patient phone number not available');
+      alert("Patient phone number not available");
     }
   };
 
   const logout = () => {
-    localStorage.removeItem('driver');
-    localStorage.removeItem('driverToken');
-    localStorage.removeItem('driverRefreshToken');
-    router.replace('/login/driver-login');
+    localStorage.removeItem("driver");
+    localStorage.removeItem("driverToken");
+    localStorage.removeItem("driverRefreshToken");
+    router.replace("/login/driver-login");
   };
 
   // Bidding Functions
   const fetchMyBids = async () => {
     try {
-      const token = localStorage.getItem('driverToken');
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000";
-      
+      const token = localStorage.getItem("driverToken");
+      const apiBaseUrl =
+        process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000";
+
       const response = await fetch(`${apiBaseUrl}/api/bookings/bids/my-bids/`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
       });
 
@@ -218,48 +235,49 @@ export default function DriverDashboard() {
         return;
       }
     } catch (error) {
-      console.log('Backend not available for fetching bids');
+      console.log("Backend not available for fetching bids");
     }
-    
+
     // Demo mode - mock bids
     setMyBids([
       {
         id: 1,
         booking_id: 1,
         bid_amount: 350,
-        status: 'pending',
-        notes: 'Quick service guaranteed',
+        status: "pending",
+        notes: "Quick service guaranteed",
         created_at: new Date().toISOString(),
-        is_winner: false
+        is_winner: false,
       },
       {
         id: 2,
         booking_id: 2,
         bid_amount: 280,
-        status: 'approved',
-        notes: 'Experienced driver',
+        status: "approved",
+        notes: "Experienced driver",
         created_at: new Date().toISOString(),
-        is_winner: true
-      }
+        is_winner: true,
+      },
     ]);
   };
 
   const handlePlaceBid = async (bookingId) => {
     if (!bidAmount) {
-      alert('Please enter a bid amount in Taka');
+      alert("Please enter a bid amount in Taka");
       return;
     }
 
     setSubmitting(true);
     try {
-      const token = localStorage.getItem('driverToken');
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000";
-      
+      const token = localStorage.getItem("driverToken");
+      const apiBaseUrl =
+        process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000";
+
       const response = await fetch(`${apiBaseUrl}/api/bookings/bids/create/`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           booking: bookingId,
@@ -270,32 +288,32 @@ export default function DriverDashboard() {
       });
 
       if (response.ok) {
-        alert('Bid placed successfully!');
-        setBidAmount('');
-        setBidNote('');
+        alert("Bid placed successfully!");
+        setBidAmount("");
+        setBidNote("");
         setSelectedBooking(null);
         fetchMyBids();
         return;
       } else {
         const error = await response.json();
-        alert(error.detail || 'Failed to place bid');
+        alert(error.detail || "Failed to place bid");
       }
     } catch (error) {
-      console.log('Backend not available, using demo mode for bidding');
+      console.log("Backend not available, using demo mode for bidding");
       // Demo mode - simulate bid placement
       const newBid = {
         id: myBids.length + 1,
         booking_id: bookingId,
         bid_amount: parseFloat(bidAmount),
-        status: 'pending',
+        status: "pending",
         notes: bidNote,
         created_at: new Date().toISOString(),
-        is_winner: false
+        is_winner: false,
       };
       setMyBids([...myBids, newBid]);
-      alert('Bid placed successfully! (Demo Mode)');
-      setBidAmount('');
-      setBidNote('');
+      alert("Bid placed successfully! (Demo Mode)");
+      setBidAmount("");
+      setBidNote("");
       setSelectedBooking(null);
     } finally {
       setSubmitting(false);
@@ -310,20 +328,22 @@ export default function DriverDashboard() {
         return data.results || data;
       }
     } catch (error) {
-      console.error('Error fetching bids:', error);
+      console.error("Error fetching bids:", error);
     }
     return [];
   };
 
   if (isLoading) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '100vh',
-        fontSize: '18px'
-      }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          fontSize: "18px",
+        }}
+      >
         Loading...
       </div>
     );
@@ -340,118 +360,224 @@ export default function DriverDashboard() {
         <div className="header-left">
           <img src="/assets/logo.png" alt="MEDIRIDE Logo" className="logo" />
           <h1>Driver Dashboard</h1>
-          {isDemoMode && (
-            <span className="demo-badge">Demo Mode</span>
-          )}
+          {isDemoMode && <span className="demo-badge">Demo Mode</span>}
         </div>
         <div className="header-right">
           <span className="driver-name">Welcome, {driver.full_name}</span>
-          <button onClick={logout} className="logout-btn">Logout</button>
+          <button onClick={logout} className="logout-btn">
+            Logout
+          </button>
         </div>
       </header>
 
       <div className="dashboard-content">
-        {/* Navigation Tabs */}
-        <nav className="dashboard-nav">
-          <button
-            className={`nav-tab ${activeTab === 'available' ? 'active' : ''}`}
-            onClick={() => setActiveTab('available')}
-          >
-            📋 Available Bookings
-          </button>
-          <button
-            className={`nav-tab ${activeTab === 'my-bids' ? 'active' : ''}`}
-            onClick={() => setActiveTab('my-bids')}
-          >
-            💰 My Bids ({myBids.length})
-          </button>
-          <button
-            className={`nav-tab ${activeTab === 'profile' ? 'active' : ''}`}
-            onClick={() => setActiveTab('profile')}
-          >
-            👤 Profile
-          </button>
-        </nav>
+        <div className="dashboard-layout">
+          {/* Main Content */}
+          <div className="main-content">
+            {/* Navigation Tabs */}
+            <nav className="dashboard-nav">
+              <button
+                className={`nav-tab ${
+                  activeTab === "available" ? "active" : ""
+                }`}
+                onClick={() => setActiveTab("available")}
+              >
+                📋 Available Bookings
+              </button>
+              <button
+                className={`nav-tab ${activeTab === "my-bids" ? "active" : ""}`}
+                onClick={() => setActiveTab("my-bids")}
+              >
+                💰 My Bids ({myBids.length})
+              </button>
+              <button
+                className={`nav-tab ${activeTab === "profile" ? "active" : ""}`}
+                onClick={() => setActiveTab("profile")}
+              >
+                👤 Profile
+              </button>
+            </nav>
 
-        {/* Active Booking Section */}
-        {activeBooking && (
-          <section className="active-booking-section">
-            <h2>🚨 Active Booking</h2>
-            <div className="booking-card active">
-              <div className="booking-info">
-                <h3>Booking #{activeBooking.id}</h3>
-                <p><strong>Pickup:</strong> {activeBooking.pickup_location}</p>
-                <p><strong>Destination:</strong> {activeBooking.destination}</p>
-                <p><strong>Patient:</strong> {activeBooking.patient_name}</p>
-                <p><strong>Phone:</strong> {activeBooking.patient_phone}</p>
-                <p><strong>Type:</strong> {activeBooking.booking_type}</p>
-                <p><strong>Status:</strong> {activeBooking.status}</p>
-              </div>
-              <div className="booking-actions">
-                <button 
-                  className="complete-btn"
-                  onClick={completeBooking}
-                >
-                  Mark Complete
-                </button>
-                <button 
-                  className="contact-btn"
-                  onClick={() => contactPatient(activeBooking.patient_phone)}
-                >
-                  Contact Patient
-                </button>
+            {/* Active Booking Section */}
+            {activeBooking && (
+              <section className="active-booking-section">
+                <h2>🚨 Active Booking</h2>
+                <div className="booking-card active">
+                  <div className="booking-info">
+                    <h3>Booking #{activeBooking.id}</h3>
+                    <p>
+                      <strong>Pickup:</strong> {activeBooking.pickup_location}
+                    </p>
+                    <p>
+                      <strong>Destination:</strong> {activeBooking.destination}
+                    </p>
+                    <p>
+                      <strong>Patient:</strong> {activeBooking.patient_name}
+                    </p>
+                    <p>
+                      <strong>Phone:</strong> {activeBooking.patient_phone}
+                    </p>
+                    <p>
+                      <strong>Type:</strong> {activeBooking.booking_type}
+                    </p>
+                    <p>
+                      <strong>Status:</strong> {activeBooking.status}
+                    </p>
+                  </div>
+                  <div className="booking-actions">
+                    <button className="complete-btn" onClick={completeBooking}>
+                      Mark Complete
+                    </button>
+                    <button
+                      className="contact-btn"
+                      onClick={() =>
+                        contactPatient(activeBooking.patient_phone)
+                      }
+                    >
+                      Contact Patient
+                    </button>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {/* Tab Content */}
+            {activeTab === "available" && (
+              <AvailableBookingsTab
+                bookings={bookings}
+                acceptingBooking={acceptingBooking}
+                acceptBooking={acceptBooking}
+                onPlaceBid={setSelectedBooking}
+                fetchBidsForBooking={fetchBidsForBooking}
+              />
+            )}
+
+            {activeTab === "my-bids" && (
+              <MyBidsTab bids={myBids} onRefresh={fetchMyBids} />
+            )}
+
+            {activeTab === "profile" && (
+              <ProfileTab driver={driver} isDemoMode={isDemoMode} />
+            )}
+          </div>
+
+          {/* Bid Sidebar */}
+          {selectedBooking && (
+            <div className="bid-sidebar">
+              <div className="bid-sidebar-content">
+                <div className="bid-header">
+                  <h3>💰 Place Your Bid</h3>
+                  <button
+                    onClick={() => setSelectedBooking(null)}
+                    className="close-btn"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <div className="bid-booking-summary">
+                  <h4>🚑 Booking #{selectedBooking.id}</h4>
+                  <div className="route-info">
+                    <div className="route-item">
+                      <span className="route-icon">📍</span>
+                      <div>
+                        <strong>From:</strong>
+                        <p>{selectedBooking.pickup_location}</p>
+                      </div>
+                    </div>
+                    <div className="route-item">
+                      <span className="route-icon">🎯</span>
+                      <div>
+                        <strong>To:</strong>
+                        <p>{selectedBooking.destination}</p>
+                      </div>
+                    </div>
+                    <div className="booking-details">
+                      <p>
+                        <strong>👤 Patient:</strong>{" "}
+                        {selectedBooking.patient_name}
+                      </p>
+                      <p>
+                        <strong>📏 Distance:</strong> {selectedBooking.distance}
+                        km
+                      </p>
+                      <p>
+                        <strong>🚨 Type:</strong> {selectedBooking.booking_type}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bid-form">
+                  <div className="form-group">
+                    <label htmlFor="bidAmount">💵 Your Bid Amount (Taka)</label>
+                    <input
+                      id="bidAmount"
+                      type="number"
+                      value={bidAmount}
+                      onChange={(e) => setBidAmount(e.target.value)}
+                      placeholder="Enter your bid amount"
+                      min="50"
+                      step="10"
+                      required
+                    />
+                    <small>Minimum bid: ৳50</small>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="bidNote">
+                      📝 Additional Notes (Optional)
+                    </label>
+                    <textarea
+                      id="bidNote"
+                      value={bidNote}
+                      onChange={(e) => setBidNote(e.target.value)}
+                      placeholder="Any special notes about your service..."
+                      rows="3"
+                    />
+                    <small>
+                      Let the patient know why they should choose you
+                    </small>
+                  </div>
+
+                  <div className="bid-actions">
+                    <button
+                      className="cancel-btn"
+                      onClick={() => setSelectedBooking(null)}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      className="submit-btn"
+                      onClick={() => handlePlaceBid(selectedBooking.id)}
+                      disabled={submitting || !bidAmount}
+                    >
+                      {submitting ? "Submitting..." : "Submit Bid"}
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
-          </section>
-        )}
-
-        {/* Tab Content */}
-        {activeTab === 'available' && (
-          <AvailableBookingsTab 
-            bookings={bookings}
-            acceptingBooking={acceptingBooking}
-            acceptBooking={acceptBooking}
-            onPlaceBid={setSelectedBooking}
-            fetchBidsForBooking={fetchBidsForBooking}
-          />
-        )}
-
-        {activeTab === 'my-bids' && (
-          <MyBidsTab bids={myBids} onRefresh={fetchMyBids} />
-        )}
-
-        {activeTab === 'profile' && (
-          <ProfileTab driver={driver} isDemoMode={isDemoMode} />
-        )}
-
-        {/* Bid Modal */}
-        {selectedBooking && (
-          <BidModal
-            booking={selectedBooking}
-            bidAmount={bidAmount}
-            setBidAmount={setBidAmount}
-            bidNote={bidNote}
-            setBidNote={setBidNote}
-            onSubmit={() => handlePlaceBid(selectedBooking.id)}
-            onClose={() => setSelectedBooking(null)}
-            submitting={submitting}
-          />
-        )}
+          )}
+        </div>
       </div>
 
       <style jsx>{`
         .driver-dashboard {
           min-height: 100vh;
-          background: #f5f5f5;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
         .dashboard-header {
           background: white;
           padding: 1rem 2rem;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
           display: flex;
           justify-content: space-between;
           align-items: center;
+          position: sticky;
+          top: 0;
+          z-index: 100;
         }
 
         .header-left {
@@ -467,6 +593,11 @@ export default function DriverDashboard() {
         .header-left h1 {
           margin: 0;
           color: #333;
+          font-size: 1.8rem;
+          font-weight: 700;
+          background: linear-gradient(135deg, #667eea, #764ba2);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
         }
 
         .demo-badge {
@@ -486,17 +617,461 @@ export default function DriverDashboard() {
         }
 
         .driver-name {
-          font-weight: 500;
+          font-weight: 600;
           color: #333;
+          font-size: 1.1rem;
         }
 
         .logout-btn {
-          background: #dc3545;
+          background: linear-gradient(135deg, #dc3545, #c82333);
           color: white;
           border: none;
-          padding: 0.5rem 1rem;
-          border-radius: 4px;
+          padding: 0.7rem 1.5rem;
+          border-radius: 25px;
           cursor: pointer;
+          font-weight: 600;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        }
+
+        .logout-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+        }
+
+        .dashboard-content {
+          padding: 2rem;
+          min-height: calc(100vh - 80px);
+        }
+
+        .dashboard-layout {
+          display: grid;
+          grid-template-columns: 1fr 400px;
+          gap: 2rem;
+          max-width: 1400px;
+          margin: 0 auto;
+          transition: all 0.3s ease;
+        }
+
+        .dashboard-layout:not(:has(.bid-sidebar)) {
+          grid-template-columns: 1fr;
+          max-width: 1200px;
+        }
+
+        .main-content {
+          background: white;
+          border-radius: 20px;
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+          overflow: hidden;
+        }
+
+        /* Navigation Tabs Styling */
+        .dashboard-nav {
+          background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+          border-radius: 0;
+          padding: 0;
+          margin-bottom: 0;
+          display: flex;
+          border-bottom: 3px solid #e9ecef;
+        }
+
+        .nav-tab {
+          background: none;
+          border: none;
+          padding: 1.5rem 2rem;
+          cursor: pointer;
+          font-size: 1rem;
+          font-weight: 600;
+          color: #6c757d;
+          transition: all 0.3s ease;
+          flex: 1;
+          text-align: center;
+          border-bottom: 3px solid transparent;
+        }
+
+        .nav-tab:hover {
+          background: rgba(102, 126, 234, 0.1);
+          color: #495057;
+        }
+
+        .nav-tab.active {
+          background: linear-gradient(135deg, #667eea, #764ba2);
+          color: white;
+          border-bottom-color: #667eea;
+        }
+
+        /* Bid Sidebar Styling */
+        .bid-sidebar {
+          background: white;
+          border-radius: 20px;
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+          overflow: hidden;
+          height: fit-content;
+          position: sticky;
+          top: 100px;
+          animation: slideInRight 0.3s ease;
+        }
+
+        @keyframes slideInRight {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+
+        .bid-sidebar-content {
+          padding: 0;
+        }
+
+        .bid-header {
+          background: linear-gradient(135deg, #667eea, #764ba2);
+          color: white;
+          padding: 1.5rem 2rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .bid-header h3 {
+          margin: 0;
+          font-size: 1.3rem;
+          font-weight: 700;
+        }
+
+        .close-btn {
+          background: rgba(255, 255, 255, 0.2);
+          color: white;
+          border: none;
+          width: 35px;
+          height: 35px;
+          border-radius: 50%;
+          cursor: pointer;
+          font-size: 1.2rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+          background: rgba(255, 255, 255, 0.3);
+          transform: rotate(90deg);
+        }
+
+        .bid-booking-summary {
+          padding: 2rem;
+          border-bottom: 3px solid #f8f9fa;
+        }
+
+        .bid-booking-summary h4 {
+          margin: 0 0 1.5rem 0;
+          color: #2c3e50;
+          font-size: 1.2rem;
+          font-weight: 700;
+        }
+
+        .route-info {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .route-item {
+          display: flex;
+          align-items: flex-start;
+          gap: 1rem;
+          padding: 1rem;
+          background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+          border-radius: 12px;
+          border-left: 4px solid #667eea;
+        }
+
+        .route-icon {
+          font-size: 1.2rem;
+          margin-top: 0.2rem;
+        }
+
+        .route-item strong {
+          color: #2c3e50;
+          font-weight: 600;
+          display: block;
+          margin-bottom: 0.3rem;
+        }
+
+        .route-item p {
+          margin: 0;
+          color: #5a6c7d;
+          font-size: 0.95rem;
+          line-height: 1.4;
+        }
+
+        .booking-details {
+          background: #f8f9fa;
+          padding: 1rem;
+          border-radius: 12px;
+          margin-top: 1rem;
+        }
+
+        .booking-details p {
+          margin: 0.5rem 0;
+          color: #5a6c7d;
+          font-size: 0.9rem;
+        }
+
+        .bid-form {
+          padding: 2rem;
+          display: flex;
+          flex-direction: column;
+          gap: 1.5rem;
+        }
+
+        .form-group {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .form-group label {
+          margin-bottom: 0.8rem;
+          font-weight: 600;
+          color: #495057;
+          font-size: 1rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+          padding: 15px 20px;
+          border: 2px solid #e9ecef;
+          border-radius: 12px;
+          font-size: 1rem;
+          transition: all 0.3s ease;
+          font-family: inherit;
+          background: #f8f9fa;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+          outline: none;
+          border-color: #667eea;
+          box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+          transform: translateY(-1px);
+          background: white;
+        }
+
+        .form-group small {
+          margin-top: 0.5rem;
+          color: #6c757d;
+          font-style: italic;
+          font-size: 0.85rem;
+        }
+
+        .bid-actions {
+          display: flex;
+          gap: 1rem;
+          margin-top: 1rem;
+        }
+
+        .cancel-btn,
+        .submit-btn {
+          flex: 1;
+          padding: 15px 25px;
+          border: none;
+          border-radius: 12px;
+          font-weight: 600;
+          font-size: 1rem;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .cancel-btn {
+          background: #6c757d;
+          color: white;
+        }
+
+        .submit-btn {
+          background: linear-gradient(135deg, #27ae60, #2ecc71);
+          color: white;
+        }
+
+        .submit-btn:disabled {
+          opacity: 0.7;
+          cursor: not-allowed;
+        }
+
+        .cancel-btn:hover,
+        .submit-btn:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .cancel-btn:hover {
+          background: #5a6268;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+          background: linear-gradient(135deg, #229954, #28b463);
+        }
+
+        /* Active Booking Section */
+        .active-booking-section {
+          background: linear-gradient(135deg, #e74c3c, #c0392b);
+          color: white;
+          padding: 2rem;
+          margin: 2rem;
+          border-radius: 15px;
+          box-shadow: 0 8px 25px rgba(231, 76, 60, 0.3);
+        }
+
+        .active-booking-section h2 {
+          margin: 0 0 1.5rem 0;
+          font-size: 1.5rem;
+          font-weight: 700;
+        }
+
+        .booking-card.active {
+          background: rgba(255, 255, 255, 0.15);
+          backdrop-filter: blur(10px);
+          border: 2px solid rgba(255, 255, 255, 0.2);
+          border-radius: 15px;
+          padding: 2rem;
+        }
+
+        .booking-card.active .booking-info h3 {
+          color: white;
+          margin: 0 0 1rem 0;
+          font-size: 1.3rem;
+        }
+
+        .booking-card.active .booking-info p {
+          color: rgba(255, 255, 255, 0.9);
+          margin: 0.5rem 0;
+          font-size: 1rem;
+        }
+
+        .booking-card.active .booking-actions {
+          display: flex;
+          gap: 1rem;
+          margin-top: 1.5rem;
+        }
+
+        .complete-btn,
+        .contact-btn {
+          flex: 1;
+          padding: 12px 20px;
+          border: none;
+          border-radius: 10px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .complete-btn {
+          background: #27ae60;
+          color: white;
+        }
+
+        .contact-btn {
+          background: #f39c12;
+          color: white;
+        }
+
+        .complete-btn:hover,
+        .contact-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+          .dashboard-layout {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+          }
+
+          .bid-sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            max-width: 800px;
+            height: 100vh;
+            z-index: 1000;
+            overflow-y: auto;
+          }
+
+          .bid-sidebar::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .dashboard-header {
+            flex-direction: column;
+            gap: 1rem;
+            padding: 1rem;
+          }
+
+          .dashboard-content {
+            padding: 1rem;
+          }
+
+          .dashboard-nav {
+            flex-direction: column;
+          }
+
+          .nav-tab {
+            padding: 1rem;
+          }
+
+          .bid-sidebar {
+            width: 100%;
+            max-width: none;
+            border-radius: 0;
+          }
+
+          .bid-header,
+          .bid-booking-summary,
+          .bid-form {
+            padding: 1.5rem;
+          }
+
+          .bid-actions {
+            flex-direction: column;
+          }
+
+          .active-booking-section {
+            margin: 1rem;
+            padding: 1.5rem;
+          }
+
+          .booking-card.active .booking-actions {
+            flex-direction: column;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .header-left h1 {
+            font-size: 1.4rem;
+          }
+
+          .driver-name {
+            font-size: 1rem;
+          }
+
+          .logout-btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+          }
         }
 
         .logout-btn:hover {
@@ -509,15 +1084,21 @@ export default function DriverDashboard() {
           margin: 0 auto;
         }
 
-        .profile-section, .active-booking-section, .bookings-section, .quick-actions {
+        .profile-section,
+        .active-booking-section,
+        .bookings-section,
+        .quick-actions {
           background: white;
           border-radius: 8px;
           padding: 1.5rem;
           margin-bottom: 2rem;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .profile-section h2, .bookings-section h2, .quick-actions h2, .active-booking-section h2 {
+        .profile-section h2,
+        .bookings-section h2,
+        .quick-actions h2,
+        .active-booking-section h2 {
           margin-top: 0;
           color: #333;
           border-bottom: 2px solid #28a745;
@@ -672,7 +1253,7 @@ export default function DriverDashboard() {
           border-radius: 12px;
           padding: 1rem;
           margin-bottom: 2rem;
-          box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
           display: flex;
           gap: 1rem;
         }
@@ -700,7 +1281,7 @@ export default function DriverDashboard() {
           background: linear-gradient(135deg, #667eea, #764ba2);
           color: white;
           transform: translateY(-2px);
-          box-shadow: 0 4px 15px rgba(102,126,234,0.3);
+          box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
 
         @media (max-width: 768px) {
@@ -719,7 +1300,13 @@ export default function DriverDashboard() {
 }
 
 // Available Bookings Tab Component
-function AvailableBookingsTab({ bookings, acceptingBooking, acceptBooking, onPlaceBid, fetchBidsForBooking }) {
+function AvailableBookingsTab({
+  bookings,
+  acceptingBooking,
+  acceptBooking,
+  onPlaceBid,
+  fetchBidsForBooking,
+}) {
   const [bidsData, setBidsData] = useState({});
 
   const handleViewBids = async (bookingId) => {
@@ -746,11 +1333,13 @@ function AvailableBookingsTab({ bookings, acceptingBooking, acceptBooking, onPla
             <div key={booking.id} className="booking-card enhanced">
               <div className="booking-header">
                 <h3>🚑 Booking #{booking.id}</h3>
-                <span className={`booking-type ${booking.booking_type?.toLowerCase()}`}>
+                <span
+                  className={`booking-type ${booking.booking_type?.toLowerCase()}`}
+                >
                   {booking.booking_type}
                 </span>
               </div>
-              
+
               <div className="route-info">
                 <div className="location pickup">
                   <span className="icon">📍</span>
@@ -770,31 +1359,39 @@ function AvailableBookingsTab({ bookings, acceptingBooking, acceptBooking, onPla
               </div>
 
               <div className="booking-details">
-                <p><strong>👤 Patient:</strong> {booking.patient_name}</p>
-                <p><strong>📱 Phone:</strong> {booking.patient_phone}</p>
-                <p><strong>📏 Distance:</strong> {booking.distance}km</p>
-                <p><strong>⏰ Created:</strong> {new Date(booking.created_at).toLocaleString()}</p>
+                <p>
+                  <strong>👤 Patient:</strong> {booking.patient_name}
+                </p>
+                <p>
+                  <strong>📱 Phone:</strong> {booking.patient_phone}
+                </p>
+                <p>
+                  <strong>📏 Distance:</strong> {booking.distance}km
+                </p>
+                <p>
+                  <strong>⏰ Created:</strong>{" "}
+                  {new Date(booking.created_at).toLocaleString()}
+                </p>
               </div>
 
               <div className="booking-actions">
-                <button 
+                <button
                   onClick={() => acceptBooking(booking.id)}
                   className="accept-btn"
                   disabled={acceptingBooking === booking.id}
                 >
-                  {acceptingBooking === booking.id ? '⏳ Accepting...' : '✅ Accept Now'}
+                  {acceptingBooking === booking.id
+                    ? "⏳ Accepting..."
+                    : "✅ Accept Now"}
                 </button>
-                <button 
-                  onClick={() => onPlaceBid(booking)}
-                  className="bid-btn"
-                >
+                <button onClick={() => onPlaceBid(booking)} className="bid-btn">
                   💰 Place Bid
                 </button>
-                <button 
+                <button
                   onClick={() => handleViewBids(booking.id)}
                   className="view-bids-btn"
                 >
-                  👁️ {bidsData[booking.id] ? 'Hide' : 'View'} Bids
+                  👁️ {bidsData[booking.id] ? "Hide" : "View"} Bids
                 </button>
               </div>
 
@@ -808,11 +1405,18 @@ function AvailableBookingsTab({ bookings, acceptingBooking, acceptBooking, onPla
                       {bidsData[booking.id]
                         .sort((a, b) => a.bid_amount - b.bid_amount)
                         .map((bid, index) => (
-                          <div key={bid.id} className={`bid-item ${index === 0 ? 'lowest' : ''}`}>
+                          <div
+                            key={bid.id}
+                            className={`bid-item ${
+                              index === 0 ? "lowest" : ""
+                            }`}
+                          >
                             <div className="bid-info">
                               <strong>৳{bid.bid_amount}</strong>
                               <span>by {bid.driver_name}</span>
-                              {index === 0 && <span className="badge">Lowest</span>}
+                              {index === 0 && (
+                                <span className="badge">Lowest</span>
+                              )}
                             </div>
                             {bid.notes && <small>{bid.notes}</small>}
                           </div>
@@ -828,145 +1432,136 @@ function AvailableBookingsTab({ bookings, acceptingBooking, acceptBooking, onPla
 
       <style jsx>{`
         .bookings-section {
-          background: white;
-          border-radius: 15px;
           padding: 2rem;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.08);
         }
 
         .bookings-section h2 {
-          margin-top: 0;
+          margin: 0 0 2rem 0;
           color: #2c3e50;
           font-size: 1.8rem;
+          font-weight: 700;
           padding-bottom: 1rem;
-          border-bottom: 3px solid linear-gradient(135deg, #667eea, #764ba2);
+          border-bottom: 3px solid transparent;
+          background: linear-gradient(135deg, #667eea, #764ba2);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
         }
 
         .no-bookings {
           text-align: center;
-          padding: 3rem;
+          padding: 4rem 2rem;
           color: #6c757d;
+          background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+          border-radius: 15px;
         }
 
         .no-bookings p {
-          font-size: 1.1rem;
-          margin: 0.5rem 0;
+          font-size: 1.2rem;
+          margin: 1rem 0;
+          line-height: 1.5;
         }
 
         .bookings-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+          grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
           gap: 2rem;
         }
 
         .booking-card.enhanced {
           background: white;
-          border-radius: 15px;
-          padding: 1.5rem;
-          box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-          border-left: 4px solid #667eea;
+          border-radius: 20px;
+          padding: 2rem;
+          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+          border-left: 5px solid transparent;
+          background-clip: padding-box;
           transition: all 0.3s ease;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .booking-card.enhanced::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 5px;
+          height: 100%;
+          background: linear-gradient(135deg, #667eea, #764ba2);
         }
 
         .booking-card.enhanced:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+          transform: translateY(-8px);
+          box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
         }
 
         .booking-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 1.5rem;
-          padding-bottom: 1rem;
+          margin-bottom: 2rem;
+          padding-bottom: 1.5rem;
           border-bottom: 2px solid #f8f9fa;
         }
 
         .booking-header h3 {
           margin: 0;
           color: #2c3e50;
-          font-size: 1.2rem;
+          font-size: 1.3rem;
+          font-weight: 700;
         }
 
         .booking-type {
-          padding: 6px 12px;
-          border-radius: 20px;
+          padding: 8px 16px;
+          border-radius: 25px;
           font-size: 0.8rem;
-          font-weight: 600;
+          font-weight: 700;
           text-transform: uppercase;
+          letter-spacing: 0.5px;
         }
 
         .booking-type.emergency {
           background: linear-gradient(135deg, #e74c3c, #c0392b);
           color: white;
+          box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
         }
 
-        .booking-type.scheduled {
+        .booking-type.standard {
           background: linear-gradient(135deg, #3498db, #2980b9);
           color: white;
+          box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
         }
 
-        .route-info {
-          margin-bottom: 1.5rem;
+        .booking-info {
+          margin-bottom: 2rem;
         }
 
-        .location {
+        .booking-info p {
+          margin: 0.8rem 0;
+          color: #5a6c7d;
+          font-size: 1rem;
           display: flex;
           align-items: center;
-          gap: 1rem;
-          margin-bottom: 1rem;
-          padding: 1rem;
-          background: #f8f9fa;
-          border-radius: 10px;
+          gap: 0.5rem;
         }
 
-        .location .icon {
-          font-size: 1.5rem;
-        }
-
-        .location strong {
-          display: block;
-          color: #495057;
-          margin-bottom: 0.3rem;
-        }
-
-        .location p {
-          margin: 0;
-          color: #6c757d;
-          font-size: 0.9rem;
-        }
-
-        .route-arrow {
-          text-align: center;
-          font-size: 1.2rem;
-          margin: 0.5rem 0;
-        }
-
-        .booking-details {
-          margin-bottom: 1.5rem;
-          padding: 1rem;
-          background: #f8f9fa;
-          border-radius: 10px;
-        }
-
-        .booking-details p {
-          margin: 0.5rem 0;
-          color: #5a6c7d;
-          font-size: 0.9rem;
+        .booking-info strong {
+          color: #2c3e50;
+          font-weight: 600;
         }
 
         .booking-actions {
           display: flex;
-          gap: 0.5rem;
-          flex-wrap: wrap;
+          gap: 1rem;
+          margin-bottom: 1.5rem;
         }
 
-        .accept-btn, .bid-btn, .view-bids-btn {
+        .accept-btn,
+        .bid-btn,
+        .view-bids-btn {
           flex: 1;
-          min-width: 100px;
-          padding: 12px 16px;
+          padding: 12px 20px;
           border: none;
-          border-radius: 8px;
+          border-radius: 12px;
           font-weight: 600;
           cursor: pointer;
           transition: all 0.3s ease;
@@ -976,21 +1571,26 @@ function AvailableBookingsTab({ bookings, acceptingBooking, acceptBooking, onPla
         .accept-btn {
           background: linear-gradient(135deg, #27ae60, #2ecc71);
           color: white;
+          box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
         }
 
         .bid-btn {
           background: linear-gradient(135deg, #f39c12, #e67e22);
           color: white;
+          box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
         }
 
         .view-bids-btn {
           background: linear-gradient(135deg, #9b59b6, #8e44ad);
           color: white;
+          box-shadow: 0 4px 15px rgba(155, 89, 182, 0.3);
         }
 
-        .accept-btn:hover, .bid-btn:hover, .view-bids-btn:hover {
+        .accept-btn:hover,
+        .bid-btn:hover,
+        .view-bids-btn:hover {
           transform: translateY(-2px);
-          box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
         }
 
         .accept-btn:disabled {
@@ -1000,54 +1600,72 @@ function AvailableBookingsTab({ bookings, acceptingBooking, acceptBooking, onPla
         }
 
         .bids-display {
-          margin-top: 1.5rem;
-          padding-top: 1.5rem;
-          border-top: 2px solid #f8f9fa;
+          margin-top: 2rem;
+          padding-top: 2rem;
+          border-top: 3px solid #f8f9fa;
+          background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+          border-radius: 15px;
+          padding: 1.5rem;
         }
 
         .bids-display h4 {
-          margin: 0 0 1rem 0;
+          margin: 0 0 1.5rem 0;
           color: #2c3e50;
-          font-size: 1rem;
+          font-size: 1.1rem;
+          font-weight: 700;
         }
 
         .bids-list {
           display: flex;
           flex-direction: column;
-          gap: 0.5rem;
+          gap: 1rem;
         }
 
         .bid-item {
-          background: #f8f9fa;
-          padding: 0.8rem;
-          border-radius: 8px;
-          border-left: 3px solid #e9ecef;
+          background: white;
+          padding: 1.2rem;
+          border-radius: 12px;
+          border-left: 4px solid #e9ecef;
+          transition: all 0.3s ease;
+        }
+
+        .bid-item:hover {
+          transform: translateX(5px);
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         .bid-item.lowest {
           background: linear-gradient(135deg, #e8f5e8, #d4edda);
           border-left-color: #27ae60;
+          box-shadow: 0 4px 15px rgba(39, 174, 96, 0.1);
         }
 
         .bid-info {
           display: flex;
           align-items: center;
-          gap: 0.5rem;
-          margin-bottom: 0.3rem;
+          gap: 1rem;
+          margin-bottom: 0.5rem;
+        }
+
+        .bid-info strong {
+          font-size: 1.2rem;
+          color: #2c3e50;
         }
 
         .badge {
-          background: #27ae60;
+          background: linear-gradient(135deg, #27ae60, #2ecc71);
           color: white;
-          padding: 2px 8px;
-          border-radius: 12px;
-          font-size: 0.7rem;
-          font-weight: 600;
+          padding: 4px 12px;
+          border-radius: 15px;
+          font-size: 0.75rem;
+          font-weight: 700;
+          text-transform: uppercase;
         }
 
         .bid-item small {
           color: #6c757d;
           font-style: italic;
+          line-height: 1.4;
         }
 
         @media (max-width: 768px) {
@@ -1059,9 +1677,14 @@ function AvailableBookingsTab({ bookings, acceptingBooking, acceptBooking, onPla
             flex-direction: column;
           }
 
-          .accept-btn, .bid-btn, .view-bids-btn {
-            flex: none;
-            width: 100%;
+          .booking-header {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+          }
+
+          .no-bookings {
+            padding: 2rem 1rem;
           }
         }
       `}</style>
@@ -1082,24 +1705,34 @@ function MyBidsTab({ bids, onRefresh }) {
 
       {bids.length === 0 ? (
         <div className="no-bids">
-          <p>📭 You haven't placed any bids yet.</p>
+          <p>📭 You haven&apos;t placed any bids yet.</p>
           <p>Browse available bookings to start bidding!</p>
         </div>
       ) : (
         <div className="bids-grid">
-          {bids.map(bid => (
+          {bids.map((bid) => (
             <div key={bid.id} className="bid-card">
               <div className="bid-header">
                 <h3>🚑 Booking #{bid.booking_id}</h3>
                 <div className="bid-amount">৳{bid.bid_amount}</div>
               </div>
-              
+
               <div className="bid-details">
-                <p><strong>📅 Submitted:</strong> {new Date(bid.created_at).toLocaleString()}</p>
-                <p><strong>📝 Status:</strong> 
-                  <span className={`status-badge ${bid.status}`}>{bid.status}</span>
+                <p>
+                  <strong>📅 Submitted:</strong>{" "}
+                  {new Date(bid.created_at).toLocaleString()}
                 </p>
-                {bid.notes && <p><strong>💬 Notes:</strong> {bid.notes}</p>}
+                <p>
+                  <strong>📝 Status:</strong>
+                  <span className={`status-badge ${bid.status}`}>
+                    {bid.status}
+                  </span>
+                </p>
+                {bid.notes && (
+                  <p>
+                    <strong>💬 Notes:</strong> {bid.notes}
+                  </p>
+                )}
               </div>
 
               <div className="bid-status">
@@ -1107,7 +1740,7 @@ function MyBidsTab({ bids, onRefresh }) {
                   <div className="status-indicator winner">
                     🏆 <span>Winning Bid!</span>
                   </div>
-                ) : bid.status === 'approved' ? (
+                ) : bid.status === "approved" ? (
                   <div className="status-indicator approved">
                     ✅ <span>Approved</span>
                   </div>
@@ -1127,7 +1760,7 @@ function MyBidsTab({ bids, onRefresh }) {
           background: white;
           border-radius: 15px;
           padding: 2rem;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         }
 
         .section-header {
@@ -1158,7 +1791,7 @@ function MyBidsTab({ bids, onRefresh }) {
 
         .refresh-btn:hover {
           transform: translateY(-2px);
-          box-shadow: 0 4px 15px rgba(52,152,219,0.3);
+          box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
         }
 
         .no-bids {
@@ -1182,14 +1815,14 @@ function MyBidsTab({ bids, onRefresh }) {
           background: white;
           border-radius: 15px;
           padding: 1.5rem;
-          box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
           border-left: 4px solid #f39c12;
           transition: all 0.3s ease;
         }
 
         .bid-card:hover {
           transform: translateY(-3px);
-          box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
         }
 
         .bid-header {
@@ -1309,18 +1942,24 @@ function ProfileTab({ driver, isDemoMode }) {
             </div>
             <div className="info-item">
               <strong>✉️ Email:</strong>
-              <span>{driver.email || 'Not provided'}</span>
+              <span>{driver.email || "Not provided"}</span>
             </div>
             <div className="info-item">
               <strong>✅ Verification Status:</strong>
-              <span className={`status ${driver.is_phone_verified ? 'verified' : 'unverified'}`}>
-                {driver.is_phone_verified ? '✅ Verified' : '❌ Unverified'}
+              <span
+                className={`status ${
+                  driver.is_phone_verified ? "verified" : "unverified"
+                }`}
+              >
+                {driver.is_phone_verified ? "✅ Verified" : "❌ Unverified"}
               </span>
             </div>
             {isDemoMode && (
               <div className="info-item">
                 <strong>🔧 Mode:</strong>
-                <span className="demo-indicator">Demo Mode - Backend Unavailable</span>
+                <span className="demo-indicator">
+                  Demo Mode - Backend Unavailable
+                </span>
               </div>
             )}
           </div>
@@ -1354,7 +1993,7 @@ function ProfileTab({ driver, isDemoMode }) {
           background: white;
           border-radius: 15px;
           padding: 2rem;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         }
 
         .profile-section h2 {
@@ -1476,23 +2115,42 @@ function ProfileTab({ driver, isDemoMode }) {
 }
 
 // Bid Modal Component
-function BidModal({ booking, bidAmount, setBidAmount, bidNote, setBidNote, onSubmit, onClose, submitting }) {
+function BidModal({
+  booking,
+  bidAmount,
+  setBidAmount,
+  bidNote,
+  setBidNote,
+  onSubmit,
+  onClose,
+  submitting,
+}) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h3>💰 Place Your Bid</h3>
-          <button onClick={onClose} className="close-btn">✕</button>
+          <button onClick={onClose} className="close-btn">
+            ✕
+          </button>
         </div>
 
         <div className="modal-body">
           <div className="booking-summary">
             <h4>🚑 Booking #{booking.id}</h4>
             <div className="route-summary">
-              <p><strong>📍 From:</strong> {booking.pickup_location}</p>
-              <p><strong>🎯 To:</strong> {booking.destination}</p>
-              <p><strong>👤 Patient:</strong> {booking.patient_name}</p>
-              <p><strong>📏 Distance:</strong> {booking.distance}km</p>
+              <p>
+                <strong>📍 From:</strong> {booking.pickup_location}
+              </p>
+              <p>
+                <strong>🎯 To:</strong> {booking.destination}
+              </p>
+              <p>
+                <strong>👤 Patient:</strong> {booking.patient_name}
+              </p>
+              <p>
+                <strong>📏 Distance:</strong> {booking.distance}km
+              </p>
             </div>
           </div>
 
@@ -1523,9 +2181,15 @@ function BidModal({ booking, bidAmount, setBidAmount, bidNote, setBidNote, onSub
         </div>
 
         <div className="modal-footer">
-          <button onClick={onClose} className="cancel-btn">❌ Cancel</button>
-          <button onClick={onSubmit} disabled={submitting} className="submit-btn">
-            {submitting ? '⏳ Placing Bid...' : '🚀 Place Bid'}
+          <button onClick={onClose} className="cancel-btn">
+            ❌ Cancel
+          </button>
+          <button
+            onClick={onSubmit}
+            disabled={submitting}
+            className="submit-btn"
+          >
+            {submitting ? "⏳ Placing Bid..." : "🚀 Place Bid"}
           </button>
         </div>
 
@@ -1536,7 +2200,7 @@ function BidModal({ booking, bidAmount, setBidAmount, bidNote, setBidNote, onSub
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.6);
+            background: rgba(0, 0, 0, 0.6);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1545,8 +2209,12 @@ function BidModal({ booking, bidAmount, setBidAmount, bidNote, setBidNote, onSub
           }
 
           @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+              opacity: 0;
+            }
+            to {
+              opacity: 1;
+            }
           }
 
           .modal-content {
@@ -1556,7 +2224,7 @@ function BidModal({ booking, bidAmount, setBidAmount, bidNote, setBidNote, onSub
             max-width: 600px;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             animation: slideUp 0.3s ease-out;
           }
 
@@ -1589,7 +2257,7 @@ function BidModal({ booking, bidAmount, setBidAmount, bidNote, setBidNote, onSub
           }
 
           .close-btn {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
             border: none;
             font-size: 1.5rem;
             cursor: pointer;
@@ -1605,7 +2273,7 @@ function BidModal({ booking, bidAmount, setBidAmount, bidNote, setBidNote, onSub
           }
 
           .close-btn:hover {
-            background: rgba(255,255,255,0.3);
+            background: rgba(255, 255, 255, 0.3);
             transform: rotate(90deg);
           }
 
@@ -1665,7 +2333,7 @@ function BidModal({ booking, bidAmount, setBidAmount, bidNote, setBidNote, onSub
           .form-group textarea:focus {
             outline: none;
             border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102,126,234,0.1);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
             transform: translateY(-1px);
           }
 
@@ -1714,7 +2382,7 @@ function BidModal({ booking, bidAmount, setBidAmount, bidNote, setBidNote, onSub
           .cancel-btn:hover,
           .submit-btn:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
           }
 
           .cancel-btn:hover {
