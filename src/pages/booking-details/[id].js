@@ -215,8 +215,46 @@ export default function BookingDetails() {
       setLoading(true);
       setError('');
       
-      // Since there's no specific booking detail endpoint, fetch all bookings and filter
-      const data = await authenticatedFetch("http://localhost:8000/api/bookings/");
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000";
+      
+      // Try to fetch specific booking with bids
+      try {
+        const response = await fetch(`${apiBaseUrl}/api/bookings/${id}/bids/`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          const bidsData = await response.json();
+          
+          // Also fetch the booking details
+          const bookingResponse = await fetch(`${apiBaseUrl}/api/bookings/`, {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`,
+              'Content-Type': 'application/json',
+            },
+          });
+          
+          if (bookingResponse.ok) {
+            const bookingsData = await bookingResponse.json();
+            const bookingDetail = bookingsData.find(b => b.id === parseInt(id));
+            
+            if (bookingDetail) {
+              // Add bids to the booking object
+              bookingDetail.bids = bidsData;
+              setBooking(bookingDetail);
+              return;
+            }
+          }
+        }
+      } catch (error) {
+        console.log('Failed to fetch booking with bids, falling back to regular fetch');
+      }
+      
+      // Fallback: fetch all bookings and filter
+      const data = await authenticatedFetch(`${apiBaseUrl}/api/bookings/`);
       const bookingDetail = data.find(b => b.id === parseInt(id));
       
       if (!bookingDetail) {
@@ -262,6 +300,31 @@ export default function BookingDetails() {
       };
     }
     return null;
+  };
+
+  const handleAcceptBid = async (bidId) => {
+    try {
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000";
+      const response = await fetch(`${apiBaseUrl}/api/bookings/bids/${bidId}/accept/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        // Refresh the booking details to show updated status
+        await fetchBookingDetails();
+        alert('Bid accepted successfully!');
+      } else {
+        const errorData = await response.json();
+        alert(errorData.detail || 'Failed to accept bid');
+      }
+    } catch (error) {
+      console.error('Error accepting bid:', error);
+      alert('Failed to accept bid. Please try again.');
+    }
   };
 
   if (loading) {
@@ -654,6 +717,171 @@ export default function BookingDetails() {
           box-shadow: 0 6px 20px rgba(0,123,255,0.4);
         }
 
+        .bids-container {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .bid-card {
+          background: white;
+          border-radius: 12px;
+          padding: 1.5rem;
+          box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+          border: 1px solid #e9ecef;
+          transition: all 0.3s ease;
+        }
+
+        .bid-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .bid-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1rem;
+          padding-bottom: 1rem;
+          border-bottom: 1px solid #e9ecef;
+        }
+
+        .driver-info-bid {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+        }
+
+        .driver-avatar-small {
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #007bff, #0056b3);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-weight: bold;
+          font-size: 1.2rem;
+        }
+
+        .driver-details-bid {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .driver-name-bid {
+          font-weight: bold;
+          font-size: 1.1rem;
+          color: #2c3e50;
+        }
+
+        .driver-phone-bid {
+          color: #6c757d;
+          font-size: 0.9rem;
+        }
+
+        .bid-price {
+          font-size: 1.8rem;
+          font-weight: bold;
+          color: #28a745;
+          background: linear-gradient(135deg, #d4edda, #c3e6cb);
+          padding: 0.5rem 1rem;
+          border-radius: 8px;
+          border: 1px solid #28a745;
+        }
+
+        .bid-details {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+          margin-bottom: 1rem;
+        }
+
+        .bid-detail-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .bid-label {
+          font-weight: 600;
+          color: #495057;
+          font-size: 0.9rem;
+        }
+
+        .bid-value {
+          color: #343a40;
+          font-weight: 500;
+        }
+
+        .bid-actions {
+          display: flex;
+          gap: 1rem;
+          justify-content: flex-end;
+        }
+
+        .accept-bid-btn {
+          background: linear-gradient(135deg, #28a745, #20c997);
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 8px;
+          cursor: pointer;
+          font-weight: bold;
+          transition: all 0.3s ease;
+          box-shadow: 0 3px 10px rgba(40,167,69,0.3);
+        }
+
+        .accept-bid-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(40,167,69,0.4);
+        }
+
+        .contact-driver-btn {
+          background: linear-gradient(135deg, #007bff, #0056b3);
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 8px;
+          text-decoration: none;
+          font-weight: bold;
+          transition: all 0.3s ease;
+          box-shadow: 0 3px 10px rgba(0,123,255,0.3);
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .contact-driver-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(0,123,255,0.4);
+        }
+
+        .no-bids-message {
+          text-align: center;
+          padding: 2rem;
+          background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+          border-radius: 12px;
+          border: 1px dashed #6c757d;
+        }
+
+        .no-bids-icon {
+          font-size: 3rem;
+          margin-bottom: 1rem;
+          opacity: 0.7;
+        }
+
+        .no-bids-message h4 {
+          margin: 0 0 0.5rem 0;
+          color: #495057;
+        }
+
+        .no-bids-message p {
+          margin: 0;
+          color: #6c757d;
+        }
+
         @media (max-width: 768px) {
           .booking-detail-container {
             margin: 1rem;
@@ -801,6 +1029,79 @@ export default function BookingDetails() {
                 <span className="detail-value">{booking.notes || 'No additional notes'}</span>
               </div>
             </div>
+
+            {/* Bids Section - Only show for pending bookings with bids */}
+            {booking.status === 'pending' && booking.bids && booking.bids.length > 0 && (
+              <div className="detail-section bids-section">
+                <div className="section-title">
+                  💰 Driver Bids ({booking.bids.length})
+                </div>
+                <div className="bids-container">
+                  {booking.bids.map((bid) => (
+                    <div key={bid.id} className="bid-card">
+                      <div className="bid-header">
+                        <div className="driver-info-bid">
+                          <div className="driver-avatar-small">
+                            {bid.driver_name.charAt(0)}
+                          </div>
+                          <div className="driver-details-bid">
+                            <div className="driver-name-bid">{bid.driver_name}</div>
+                            <div className="driver-phone-bid">📞 {bid.driver_phone}</div>
+                          </div>
+                        </div>
+                        <div className="bid-price">
+                          ৳{bid.price}
+                        </div>
+                      </div>
+                      <div className="bid-details">
+                        <div className="bid-detail-item">
+                          <span className="bid-label">Estimated Time:</span>
+                          <span className="bid-value">{bid.estimated_time} minutes</span>
+                        </div>
+                        {bid.notes && (
+                          <div className="bid-detail-item">
+                            <span className="bid-label">Driver Notes:</span>
+                            <span className="bid-value">{bid.notes}</span>
+                          </div>
+                        )}
+                        <div className="bid-detail-item">
+                          <span className="bid-label">Bid Submitted:</span>
+                          <span className="bid-value">{formatDate(bid.created_at)}</span>
+                        </div>
+                      </div>
+                      <div className="bid-actions">
+                        <button 
+                          className="accept-bid-btn"
+                          onClick={() => handleAcceptBid(bid.id)}
+                        >
+                          ✅ Accept Bid
+                        </button>
+                        <a 
+                          href={`tel:${bid.driver_phone}`} 
+                          className="contact-driver-btn"
+                        >
+                          📞 Contact Driver
+                        </a>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* No Bids Message - Only show for pending bookings with no bids */}
+            {booking.status === 'pending' && (!booking.bids || booking.bids.length === 0) && (
+              <div className="detail-section no-bids-section">
+                <div className="section-title">
+                  💰 Driver Bids
+                </div>
+                <div className="no-bids-message">
+                  <div className="no-bids-icon">⏳</div>
+                  <h4>No bids yet</h4>
+                  <p>Your booking is visible to drivers. They will submit bids soon!</p>
+                </div>
+              </div>
+            )}
 
             {/* Driver Information - Only show for non-pending bookings */}
             {booking.status !== 'pending' && getDriverInfo() && (

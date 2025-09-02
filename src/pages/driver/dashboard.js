@@ -46,7 +46,7 @@ export default function DriverDashboard() {
       const token = localStorage.getItem('driverToken');
       const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000";
       
-      const response = await fetch(`${apiBaseUrl}/api/bookings/`, {
+      const response = await fetch(`${apiBaseUrl}/api/bookings/available-for-drivers/`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -205,7 +205,7 @@ export default function DriverDashboard() {
       const token = localStorage.getItem('driverToken');
       const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000";
       
-      const response = await fetch(`${apiBaseUrl}/api/bids/my-bids/`, {
+      const response = await fetch(`${apiBaseUrl}/api/bookings/bids/my-bids/`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -246,7 +246,7 @@ export default function DriverDashboard() {
 
   const handlePlaceBid = async (bookingId) => {
     if (!bidAmount) {
-      alert('Please enter a bid amount');
+      alert('Please enter a bid amount in Taka');
       return;
     }
 
@@ -255,15 +255,16 @@ export default function DriverDashboard() {
       const token = localStorage.getItem('driverToken');
       const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000";
       
-      const response = await fetch(`${apiBaseUrl}/api/bids/`, {
+      const response = await fetch(`${apiBaseUrl}/api/bookings/bids/create/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
-          booking_id: bookingId,
-          bid_amount: parseFloat(bidAmount),
+          booking: bookingId,
+          price: parseFloat(bidAmount),
+          estimated_time: 30, // Default estimated time in minutes
           notes: bidNote,
         }),
       });
@@ -1502,7 +1503,7 @@ function BidModal({ booking, bidAmount, setBidAmount, bidNote, setBidNote, onSub
                 type="number"
                 value={bidAmount}
                 onChange={(e) => setBidAmount(e.target.value)}
-                placeholder="Enter your competitive bid amount"
+                placeholder="Enter your bid amount in Taka (৳)"
                 min="0"
                 step="10"
               />
