@@ -54,7 +54,9 @@ export default function Home() {
       {/* Left Section */}
       <section className="left-panel">
         <img src="/assets/logo.png" alt="MEDIRIDE Logo" className="logo" />
-        <p className="tagline">Your need, Our priority, Ready to Response, Anytime Anywhere</p>
+        <p className="tagline">
+          Your need, Our priority, Ready to Response, Anytime Anywhere
+        </p>
         <button className="primary-btn">
           <img src="/assets/call-icon.png" alt="Call Icon" className="icon" />
           Call Now
@@ -65,29 +67,44 @@ export default function Home() {
       <section className="right-panel">
         <header className="header">
           <div className="profile-search-wrapper">
-            <img src="/assets/Formal Photo.jpg" alt="Profile" className="profile-pic" />
+            <img
+              src="/assets/Formal Photo.jpg"
+              alt="Profile"
+              className="profile-pic"
+            />
             <div className="search-bar">
               <span className="search-icon">🔍</span>
               <input type="text" placeholder="Search" />
             </div>
           </div>
-          
+
           {/* Login/Profile Button with Dropdown */}
           <div className="login-wrapper">
             {isLoggedIn ? (
               <>
                 <button className="profile-btn" onClick={toggleDropdown}>
-                  👤 {user?.full_name || 'Profile'}
+                  👤 {user?.full_name || "Profile"}
                 </button>
                 {dropdownVisible && (
                   <div className="dropdown">
-                    <Link href="/profile" className="dropdown-item" onClick={() => setDropdownVisible(false)}>
+                    <Link
+                      href="/profile"
+                      className="dropdown-item"
+                      onClick={() => setDropdownVisible(false)}
+                    >
                       👤 View Profile
                     </Link>
-                    <Link href="/BookList" className="dropdown-item" onClick={() => setDropdownVisible(false)}>
+                    <Link
+                      href="/BookList"
+                      className="dropdown-item"
+                      onClick={() => setDropdownVisible(false)}
+                    >
                       📋 My Bookings
                     </Link>
-                    <button className="dropdown-item logout-item" onClick={handleLogout}>
+                    <button
+                      className="dropdown-item logout-item"
+                      onClick={handleLogout}
+                    >
                       🚪 Logout
                     </button>
                   </div>
@@ -100,10 +117,18 @@ export default function Home() {
                 </button>
                 {dropdownVisible && (
                   <div className="dropdown">
-                    <Link href="/login/userLogin" className="dropdown-item" onClick={() => handleRoleSelect('user')}>
+                    <Link
+                      href="/login/userLogin"
+                      className="dropdown-item"
+                      onClick={() => handleRoleSelect("user")}
+                    >
                       Login as User
                     </Link>
-                    <Link href="/login/driver-login" className="dropdown-item" onClick={() => handleRoleSelect('driver')}>
+                    <Link
+                      href="/login/driver-login"
+                      className="dropdown-item"
+                      onClick={() => handleRoleSelect("driver")}
+                    >
                       Login as Driver
                     </Link>
                   </div>
@@ -114,47 +139,74 @@ export default function Home() {
         </header>
 
         <h1 className="welcome">
-          Welcome to <span className="highlight">MEDI<span className="ride">RIDE</span></span>
+          Welcome to{" "}
+          <span className="highlight">
+            MEDI<span className="ride">RIDE</span>
+          </span>
         </h1>
 
         <div className="action-grid">
           <div className="action-item">
-            <img src="/assets/instant.gif" alt="Instant Book" className="action-img" />
+            <img
+              src="/assets/instant.gif"
+              alt="Instant Book"
+              className="action-img"
+            />
             <Link href="/instant-book">
               <button className="secondary-btn">Instant Book</button>
             </Link>
           </div>
 
           <div className="action-item">
-            <img src="/assets/Booking.png" alt="Book for Later" className="action-img" />
+            <img
+              src="/assets/Booking.png"
+              alt="Book for Later"
+              className="action-img"
+            />
             <Link href="/book-later">
               <button className="secondary-btn">Book For Later</button>
             </Link>
           </div>
 
           <div className="action-item">
-            <img src="/assets/List.png" alt="Book for Later" className="action-img" />
+            <img
+              src="/assets/List.png"
+              alt="Book for Later"
+              className="action-img"
+            />
             <Link href="/BookList">
               <button className="secondary-btn">List of Booked</button>
             </Link>
           </div>
 
           <div className="action-item">
-            <img src="/assets/Booking.png" alt="Booking Request" className="action-img" />
+            <img
+              src="/assets/Booking.png"
+              alt="Booking Request"
+              className="action-img"
+            />
             <Link href="/booking-request">
               <button className="secondary-btn">Booking Request</button>
             </Link>
           </div>
 
           <div className="action-item">
-            <img src="/assets/List.png" alt="Scheduled Bookings" className="action-img" />
-            <Link href="/scheduled-bookings">
+            <img
+              src="/assets/List.png"
+              alt="Scheduled Bookings"
+              className="action-img"
+            />
+            <Link href="/BookList">
               <button className="secondary-btn">Scheduled Bookings</button>
             </Link>
           </div>
 
           <div className="action-item wide">
-            <img src="/assets/hospital.png" alt="Hospital Info" className="action-img" />
+            <img
+              src="/assets/hospital.png"
+              alt="Hospital Info"
+              className="action-img"
+            />
             <Link href="/nearest-info">
               <button className="secondary-btn">
                 Info on Nearest Hospital & Doctor
@@ -163,14 +215,22 @@ export default function Home() {
           </div>
 
           <div className="action-item">
-            <img src="/assets/hospital.png" alt="All Hospitals" className="action-img" />
+            <img
+              src="/assets/hospital.png"
+              alt="All Hospitals"
+              className="action-img"
+            />
             <Link href="/hospitals">
               <button className="secondary-btn">Browse Hospitals</button>
             </Link>
           </div>
 
           <div className="action-item">
-            <img src="/assets/doctor.png" alt="All Doctors" className="action-img" />
+            <img
+              src="/assets/doctor.png"
+              alt="All Doctors"
+              className="action-img"
+            />
             <Link href="/doctors">
               <button className="secondary-btn">Browse Doctors</button>
             </Link>
