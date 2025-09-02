@@ -84,7 +84,7 @@ export default function Home() {
                     <Link href="/profile" className="dropdown-item" onClick={() => setDropdownVisible(false)}>
                       👤 View Profile
                     </Link>
-                    <Link href="/my-bookings" className="dropdown-item" onClick={() => setDropdownVisible(false)}>
+                    <Link href="/BookList" className="dropdown-item" onClick={() => setDropdownVisible(false)}>
                       📋 My Bookings
                     </Link>
                     <button className="dropdown-item logout-item" onClick={handleLogout}>
