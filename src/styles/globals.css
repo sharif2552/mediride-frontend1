@@ -1,53 +1,101 @@
-/* GLOBAL RESET */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* Import all component CSS files */
+@import url('./base.css');
+@import url('./components.css');
+@import url('./layout.css');
+@import url('./forms.css');
+@import url('./dashboard.css');
+
+/* Additional specific styles that don't fit in other categories */
+
+/* Beautiful Action Images */
+.action-images {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin: 30px 0;
 }
 
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  color: #333;
-  line-height: 1.6;
-  overflow-x: hidden;
-  position: relative;
+.action-image {
+  text-align: center;
+  padding: 20px;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+  cursor: pointer;
 }
 
-body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: 
-    radial-gradient(circle at 20% 20%, rgba(1, 92, 146, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(2, 116, 179, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 40% 60%, rgba(77, 171, 247, 0.05) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: -1;
+.action-image:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
-/* MAIN CONTAINER */
-.container {
-  display: flex;
-  height: 100vh;
-  overflow: hidden;
-  position: relative;
+.action-image img {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 15px;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
 }
 
-.container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #015c92, #0274b3, #4dabf7, #015c92);
-  background-size: 200% 100%;
-  animation: gradientMove 3s ease-in-out infinite;
-  z-index: 10;
+.action-image h3 {
+  color: #2c3e50;
+  margin-bottom: 10px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.action-image p {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Home Page Secondary Button Override */
+.home-secondary-btn {
+  background: linear-gradient(135deg, #74c0fc, #4dabf7) !important;
+  color: white !important;
+  border: none !important;
+  font-weight: 600 !important;
+  padding: 12px 24px !important;
+  border-radius: 25px !important;
+  transition: all 0.3s ease !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  box-shadow: 0 4px 15px rgba(77, 171, 247, 0.3) !important;
+}
+
+.home-secondary-btn:hover {
+  background: linear-gradient(135deg, #5ba7f7, #3b9ade) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(77, 171, 247, 0.4) !important;
+}
+
+/* Special utility classes */
+.text-gradient {
+  background: linear-gradient(135deg, #4dabf7, #015c92);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glass-effect {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.shadow-soft {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.shadow-medium {
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.shadow-hard {
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
 }
 
 @keyframes gradientMove {

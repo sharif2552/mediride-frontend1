@@ -1,0 +1,348 @@
+/* LEFT PANEL */
+.left-panel {
+  flex: 1;
+  background: linear-gradient(135deg, #015c92 0%, #0274b3 50%, #4dabf7 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  position: relative;
+  overflow: hidden;
+  animation: slideInLeft 0.8s ease-out;
+}
+
+.left-panel::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: 
+    radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+  animation: float 20s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.left-panel .logo {
+  width: 120px;
+  height: auto;
+  margin-bottom: 30px;
+  filter: brightness(0) invert(1);
+  animation: bounce 2s ease-in-out infinite;
+}
+
+.left-panel .tagline {
+  color: white;
+  font-size: 18px;
+  text-align: center;
+  margin-bottom: 30px;
+  font-weight: 300;
+  line-height: 1.6;
+  opacity: 0.95;
+  animation: fadeIn 1s ease-out 0.5s both;
+}
+
+/* RIGHT PANEL */
+.right-panel {
+  flex: 1.2;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  animation: fadeIn 0.8s ease-out 0.3s both;
+}
+
+/* HEADER AREA */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #f1f3f4;
+}
+
+.login-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #f1f3f4;
+}
+
+.login-header .welcome {
+  font-size: 32px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.login-header .welcome .highlight {
+  background: linear-gradient(135deg, #4dabf7, #015c92);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.login-header .login-logo {
+  width: 60px;
+  height: auto;
+}
+
+/* SEARCH BAR */
+.search-container {
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.search-bar {
+  width: 100%;
+  padding: 15px 50px 15px 20px;
+  border: 2px solid #e9ecef;
+  border-radius: 25px;
+  font-size: 16px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+}
+
+.search-bar:focus {
+  outline: none;
+  border-color: #4dabf7;
+  box-shadow: 0 0 0 3px rgba(77, 171, 247, 0.1);
+  background: white;
+}
+
+.search-btn {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: linear-gradient(135deg, #4dabf7, #015c92);
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-btn:hover {
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 5px 15px rgba(77, 171, 247, 0.3);
+}
+
+/* WELCOME TEXT */
+.welcome-section {
+  text-align: center;
+  margin-bottom: 40px;
+  animation: fadeIn 1s ease-out 0.7s both;
+}
+
+.welcome-section h1 {
+  font-size: 48px;
+  font-weight: 800;
+  color: #2c3e50;
+  margin-bottom: 15px;
+  line-height: 1.2;
+}
+
+.welcome-section .highlight {
+  background: linear-gradient(135deg, #4dabf7, #015c92);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.welcome-section p {
+  font-size: 18px;
+  color: #666;
+  font-weight: 300;
+  line-height: 1.6;
+}
+
+/* NAVIGATION */
+.nav-menu {
+  display: flex;
+  list-style: none;
+  gap: 30px;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-menu li {
+  position: relative;
+}
+
+.nav-menu a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  font-size: 16px;
+  padding: 10px 0;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.nav-menu a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(135deg, #4dabf7, #015c92);
+  transition: width 0.3s ease;
+}
+
+.nav-menu a:hover::after {
+  width: 100%;
+}
+
+.nav-menu a:hover {
+  color: #015c92;
+}
+
+/* Dropdown Menu Style */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background: white;
+  min-width: 200px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  z-index: 1000;
+  border: 1px solid #e9ecef;
+  overflow: hidden;
+  top: 100%;
+  left: 0;
+  animation: fadeIn 0.3s ease;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown-content a {
+  color: #333;
+  padding: 12px 20px;
+  text-decoration: none;
+  display: block;
+  transition: all 0.3s ease;
+  border-bottom: 1px solid #f8f9fa;
+}
+
+.dropdown-content a:last-child {
+  border-bottom: none;
+}
+
+.dropdown-content a:hover {
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  color: #015c92;
+}
+
+/* Wrapper for the login button */
+.login-wrapper {
+  position: relative;
+}
+
+.login-wrapper:hover .dropdown-content {
+  display: block;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 280px;
+  background: linear-gradient(180deg, #2c3e50, #34495e);
+  color: white;
+  padding: 0;
+  overflow-y: auto;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  z-index: 1000;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-header {
+  padding: 2rem;
+  background: linear-gradient(135deg, #2c3e50, #3b5998);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-nav {
+  padding: 1rem 0;
+}
+
+.sidebar-nav-item {
+  display: block;
+  padding: 1rem 2rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border-left: 3px solid transparent;
+}
+
+.sidebar-nav-item:hover,
+.sidebar-nav-item.active {
+  background: rgba(255, 255, 255, 0.1);
+  border-left-color: #4dabf7;
+  color: white;
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 768px) {
+  .left-panel {
+    padding: 20px;
+    min-height: 300px;
+  }
+  
+  .right-panel {
+    padding: 20px;
+  }
+  
+  .login-header {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+  
+  .welcome-section h1 {
+    font-size: 32px;
+  }
+  
+  .welcome-section p {
+    font-size: 16px;
+  }
+  
+  .nav-menu {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .sidebar {
+    width: 100%;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  
+  .sidebar.open {
+    transform: translateX(0);
+  }
+}
