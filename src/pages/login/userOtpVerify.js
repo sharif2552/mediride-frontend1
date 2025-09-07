@@ -17,7 +17,8 @@ export default function UserOtpVerify() {
     setError(null);
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/accounts/verify/email/", {
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000";
+      const res = await fetch(`${API_BASE_URL}/accounts/verify/email/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
