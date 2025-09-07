@@ -216,7 +216,7 @@ export default function MyBookings() {
           <div className="no-bookings">
             <div className="no-bookings-icon">📝</div>
             <h3>No Bookings Yet</h3>
-            <p>You haven't made any bookings yet.</p>
+            <p>You haven&apos;t made any bookings yet.</p>
             <Link href="/book-now" className="book-now-btn">
               🚑 Book Your First Ride
             </Link>

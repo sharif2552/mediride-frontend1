@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { API_ENDPOINTS } from '../config/api';
 import { fetchData, buildQueryString, getCurrentLocation } from '../utils/api';
-import '../styles/hospitals.css';
 
 export default function Hospitals() {
   const [hospitals, setHospitals] = useState([]);

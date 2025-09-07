@@ -51,7 +51,7 @@ export default function AdminForgotPassword() {
         <form onSubmit={handleSubmit} className="forgot-password-form">
           <h2>Reset Your Password</h2>
           <p className="form-description">
-            Enter your admin email address and we'll send you instructions to reset your password.
+            Enter your admin email address and we&apos;ll send you instructions to reset your password.
           </p>
           
           {error && (

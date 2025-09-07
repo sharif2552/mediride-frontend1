@@ -87,7 +87,7 @@ export default function ForgotPassword() {
             Forgot <span className="highlight">Password?</span>
           </h1>
           <p style={{ color: "#666", marginTop: "0.5rem", fontSize: "14px" }}>
-            Enter your email address and we'll send you a reset code
+            Enter your email address and we&apos;ll send you a reset code
           </p>
           <img src="/assets/logo.png" alt="MEDIRIDE Logo" className="login-logo" />
         </div>

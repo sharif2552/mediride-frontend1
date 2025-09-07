@@ -429,7 +429,7 @@ export default function BidManagement() {
 
                           {bid.note && (
                             <div className="bid-note">
-                              <strong>💬 Driver's Note:</strong>
+                              <strong>💬 Driver&apos;s Note:</strong>
                               <p>{bid.note}</p>
                             </div>
                           )}

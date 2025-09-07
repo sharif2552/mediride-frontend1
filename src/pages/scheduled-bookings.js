@@ -128,7 +128,7 @@ export default function ScheduledBookings() {
               <div className="no-bookings">
                 <div className="empty-state-icon">📅</div>
                 <h3>No scheduled bookings found</h3>
-                <p>You haven't scheduled any ambulance bookings yet.</p>
+                <p>You haven&apos;t scheduled any ambulance bookings yet.</p>
                 <div className="empty-state-actions">
                   <Link href="/booking-request">
                     <button className="primary-action-btn">

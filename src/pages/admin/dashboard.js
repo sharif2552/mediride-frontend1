@@ -26,7 +26,7 @@ export default function AdminDashboard() {
       console.error('Error parsing user data:', error);
       router.push('/admin/login');
     }
-  }, []);
+  }, [router]);
 
   const fetchStatistics = async () => {
     try {
@@ -1376,7 +1376,7 @@ function StatisticsView({ stats }) {
           <div className="analytics-card">
             <h3>📊 Booking Trends</h3>
             <div className="trend-item">
-              <span>Today's Bookings</span>
+              <span>Today&apos;s Bookings</span>
               <span className="trend-value">{stats?.bookings_today || 0}</span>
             </div>
             <div className="trend-item">
