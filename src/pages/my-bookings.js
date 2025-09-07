@@ -1,7 +1,7 @@
 // src/pages/my-bookings.js
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import Link from "next/link";
 
 export default function MyBookings() {
   const [bookings, setBookings] = useState([]);
@@ -14,11 +14,11 @@ export default function MyBookings() {
 
   useEffect(() => {
     // Check if user is logged in
-    const userData = localStorage.getItem('user');
-    const token = localStorage.getItem('token');
+    const userData = localStorage.getItem("user");
+    const token = localStorage.getItem("token");
 
     if (!userData || !token) {
-      router.replace('/login');
+      router.replace("/login");
       return;
     }
 
@@ -27,20 +27,21 @@ export default function MyBookings() {
       setUser(parsedUser);
       fetchMyBookings();
     } catch (error) {
-      console.error('Error parsing user data:', error);
-      router.replace('/login');
+      console.error("Error parsing user data:", error);
+      router.replace("/login");
     }
   }, [router]);
 
   const fetchMyBookings = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000";
-      
+      const token = localStorage.getItem("token");
+      const apiBaseUrl =
+        process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000";
+
       const response = await fetch(`${apiBaseUrl}/api/bookings/my-bookings/`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
       });
 
@@ -48,33 +49,12 @@ export default function MyBookings() {
         const data = await response.json();
         setBookings(data);
       } else {
-        console.error('Failed to fetch bookings');
+        console.error("Failed to fetch bookings:", response.status);
+        setBookings([]);
       }
     } catch (error) {
-      console.error('Error fetching bookings:', error);
-      // Demo data for testing
-      setBookings([
-        {
-          id: 1,
-          pickup_location: "Dhaka Medical College Hospital",
-          destination: "United Hospital, Gulshan",
-          booking_type: "Emergency",
-          status: "open",
-          created_at: new Date().toISOString(),
-          estimated_fare: 500,
-          patient_name: "John Doe"
-        },
-        {
-          id: 2,
-          pickup_location: "Square Hospital",
-          destination: "Apollo Hospital",
-          booking_type: "Scheduled",
-          status: "pending",
-          created_at: new Date().toISOString(),
-          estimated_fare: 350,
-          patient_name: "Jane Smith"
-        }
-      ]);
+      console.error("Error fetching bookings:", error);
+      setBookings([]);
     } finally {
       setLoading(false);
     }
@@ -88,51 +68,12 @@ export default function MyBookings() {
         const data = await response.json();
         setBids(data.bids || []);
       } else {
-        // Demo bids data
-        setBids([
-          {
-            id: 1,
-            driver: {
-              full_name: "Ahmed Rahman",
-              phone_number: "+8801712345678",
-              rating: 4.8,
-              total_rides: 245
-            },
-            amount: 450,
-            note: "Experienced driver with medical emergency experience. Available immediately.",
-            created_at: new Date().toISOString(),
-            status: "pending"
-          },
-          {
-            id: 2,
-            driver: {
-              full_name: "Mohammad Ali",
-              phone_number: "+8801887654321",
-              rating: 4.6,
-              total_rides: 189
-            },
-            amount: 380,
-            note: "Quick and safe transport guaranteed. Special care for patients.",
-            created_at: new Date().toISOString(),
-            status: "pending"
-          },
-          {
-            id: 3,
-            driver: {
-              full_name: "Karim Uddin",
-              phone_number: "+8801555666777",
-              rating: 4.9,
-              total_rides: 312
-            },
-            amount: 420,
-            note: "Professional medical transport service with oxygen support available.",
-            created_at: new Date().toISOString(),
-            status: "pending"
-          }
-        ]);
+        console.error("Failed to fetch bids:", response.status);
+        setBids([]);
       }
     } catch (error) {
-      console.error('Error fetching bids:', error);
+      console.error("Error fetching bids:", error);
+      setBids([]);
     } finally {
       setLoadingBids(false);
     }
@@ -150,22 +91,28 @@ export default function MyBookings() {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'open': return '#28a745';
-      case 'pending': return '#ffc107';
-      case 'confirmed': return '#17a2b8';
-      case 'completed': return '#6c757d';
-      case 'cancelled': return '#dc3545';
-      default: return '#6c757d';
+      case "open":
+        return "#28a745";
+      case "pending":
+        return "#ffc107";
+      case "confirmed":
+        return "#17a2b8";
+      case "completed":
+        return "#6c757d";
+      case "cancelled":
+        return "#dc3545";
+      default:
+        return "#6c757d";
     }
   };
 
   const formatDateTime = (dateString) => {
-    return new Date(dateString).toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Date(dateString).toLocaleString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -189,8 +136,12 @@ export default function MyBookings() {
             animation: spin 1s linear infinite;
           }
           @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from {
+              transform: rotate(0deg);
+            }
+            to {
+              transform: rotate(360deg);
+            }
           }
         `}</style>
       </div>
@@ -202,7 +153,9 @@ export default function MyBookings() {
       {/* Header */}
       <header className="page-header">
         <div className="header-content">
-          <Link href="/dashboard" className="back-btn">← Back to Dashboard</Link>
+          <Link href="/dashboard" className="back-btn">
+            ← Back to Dashboard
+          </Link>
           <h1>📋 My Bookings</h1>
           <div className="user-info">
             <span>Welcome, {user?.full_name}</span>
@@ -227,7 +180,7 @@ export default function MyBookings() {
               <div key={booking.id} className="booking-card">
                 <div className="booking-header">
                   <h3>🚑 Booking #{booking.id}</h3>
-                  <span 
+                  <span
                     className="status-badge"
                     style={{ backgroundColor: getStatusColor(booking.status) }}
                   >
@@ -265,18 +218,22 @@ export default function MyBookings() {
                       <strong>Estimated Fare:</strong> ৳{booking.estimated_fare}
                     </div>
                     <div className="meta-item">
-                      <strong>Created:</strong> {formatDateTime(booking.created_at)}
+                      <strong>Created:</strong>{" "}
+                      {formatDateTime(booking.created_at)}
                     </div>
                   </div>
 
                   <div className="booking-actions">
-                    <button 
+                    <button
                       onClick={() => viewBids(booking)}
                       className="view-bids-btn"
                     >
                       👁️ View Bids
                     </button>
-                    <Link href={`/booking-details/${booking.id}`} className="details-btn">
+                    <Link
+                      href={`/booking-details/${booking.id}`}
+                      className="details-btn"
+                    >
                       📄 View Details
                     </Link>
                   </div>
@@ -293,15 +250,23 @@ export default function MyBookings() {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h3>💰 Bids for Booking #{selectedBooking.id}</h3>
-              <button onClick={closeBidsModal} className="close-btn">✖️</button>
+              <button onClick={closeBidsModal} className="close-btn">
+                ✖️
+              </button>
             </div>
 
             <div className="modal-body">
               <div className="booking-summary">
                 <h4>📍 Route Summary</h4>
-                <p><strong>From:</strong> {selectedBooking.pickup_location}</p>
-                <p><strong>To:</strong> {selectedBooking.destination}</p>
-                <p><strong>Type:</strong> {selectedBooking.booking_type}</p>
+                <p>
+                  <strong>From:</strong> {selectedBooking.pickup_location}
+                </p>
+                <p>
+                  <strong>To:</strong> {selectedBooking.destination}
+                </p>
+                <p>
+                  <strong>Type:</strong> {selectedBooking.booking_type}
+                </p>
               </div>
 
               {loadingBids ? (
@@ -313,7 +278,10 @@ export default function MyBookings() {
                 <div className="no-bids">
                   <div className="no-bids-icon">💭</div>
                   <h4>No Bids Yet</h4>
-                  <p>No drivers have placed bids on this booking yet. Please wait for drivers to respond.</p>
+                  <p>
+                    No drivers have placed bids on this booking yet. Please wait
+                    for drivers to respond.
+                  </p>
                 </div>
               ) : (
                 <div className="bids-list">
@@ -321,18 +289,29 @@ export default function MyBookings() {
                   {bids
                     .sort((a, b) => a.amount - b.amount) // Sort by lowest bid first
                     .map((bid, index) => (
-                      <div key={bid.id} className={`bid-card ${index === 0 ? 'lowest-bid' : ''}`}>
+                      <div
+                        key={bid.id}
+                        className={`bid-card ${
+                          index === 0 ? "lowest-bid" : ""
+                        }`}
+                      >
                         {index === 0 && (
                           <div className="lowest-badge">🏆 Lowest Bid</div>
                         )}
-                        
+
                         <div className="driver-info">
                           <div className="driver-details">
                             <h5>👨‍💼 {bid.driver.full_name}</h5>
                             <div className="driver-stats">
-                              <span className="rating">⭐ {bid.driver.rating}</span>
-                              <span className="rides">🚗 {bid.driver.total_rides} rides</span>
-                              <span className="phone">📞 {bid.driver.phone_number}</span>
+                              <span className="rating">
+                                ⭐ {bid.driver.rating}
+                              </span>
+                              <span className="rides">
+                                🚗 {bid.driver.total_rides} rides
+                              </span>
+                              <span className="phone">
+                                📞 {bid.driver.phone_number}
+                              </span>
                             </div>
                           </div>
                           <div className="bid-amount">
@@ -378,7 +357,7 @@ export default function MyBookings() {
 
         .page-header {
           background: white;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
           padding: 1.5rem 2rem;
           margin-bottom: 2rem;
         }
@@ -428,7 +407,7 @@ export default function MyBookings() {
           background: white;
           padding: 4rem 2rem;
           border-radius: 20px;
-          box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
 
         .no-bookings-icon {
@@ -459,7 +438,7 @@ export default function MyBookings() {
 
         .book-now-btn:hover {
           transform: translateY(-2px);
-          box-shadow: 0 10px 25px rgba(40,167,69,0.3);
+          box-shadow: 0 10px 25px rgba(40, 167, 69, 0.3);
         }
 
         .bookings-grid {
@@ -472,13 +451,13 @@ export default function MyBookings() {
           background: white;
           border-radius: 20px;
           overflow: hidden;
-          box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
           transition: all 0.3s ease;
         }
 
         .booking-card:hover {
           transform: translateY(-5px);
-          box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
         }
 
         .booking-header {
@@ -496,7 +475,7 @@ export default function MyBookings() {
         }
 
         .status-badge {
-          background: rgba(255,255,255,0.2);
+          background: rgba(255, 255, 255, 0.2);
           padding: 5px 15px;
           border-radius: 20px;
           font-size: 0.85rem;
@@ -593,7 +572,7 @@ export default function MyBookings() {
         .view-bids-btn:hover,
         .details-btn:hover {
           transform: translateY(-2px);
-          box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
         /* Modal Styles */
@@ -603,7 +582,7 @@ export default function MyBookings() {
           left: 0;
           right: 0;
           bottom: 0;
-          background: rgba(0,0,0,0.7);
+          background: rgba(0, 0, 0, 0.7);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -618,7 +597,7 @@ export default function MyBookings() {
           max-width: 800px;
           max-height: 90vh;
           overflow-y: auto;
-          box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
 
         .modal-header {
@@ -637,7 +616,7 @@ export default function MyBookings() {
         }
 
         .close-btn {
-          background: rgba(255,255,255,0.2);
+          background: rgba(255, 255, 255, 0.2);
           border: none;
           color: white;
           font-size: 1.2rem;
@@ -652,7 +631,7 @@ export default function MyBookings() {
         }
 
         .close-btn:hover {
-          background: rgba(255,255,255,0.3);
+          background: rgba(255, 255, 255, 0.3);
         }
 
         .modal-body {
@@ -821,7 +800,7 @@ export default function MyBookings() {
         .close-modal-btn:hover,
         .contact-admin-btn:hover {
           transform: translateY(-2px);
-          box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
         @media (max-width: 768px) {

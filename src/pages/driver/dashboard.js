@@ -10,7 +10,7 @@ export default function DriverDashboard() {
   const [bookings, setBookings] = useState([]);
   const [activeBooking, setActiveBooking] = useState(null);
   const [acceptingBooking, setAcceptingBooking] = useState(null);
-  const [isDemoMode, setIsDemoMode] = useState(false);
+  const [isDemoMode] = useState(false); // Always false since we removed demo mode
   const [activeTab, setActiveTab] = useState("available");
   const [myBids, setMyBids] = useState([]);
   const [selectedBooking, setSelectedBooking] = useState(null);
@@ -60,53 +60,15 @@ export default function DriverDashboard() {
       if (response.ok) {
         const data = await response.json();
         setBookings(data.filter((booking) => booking.status === "pending"));
-        setIsDemoMode(false);
         return; // Successfully fetched from backend
+      } else {
+        console.error("Failed to fetch bookings:", response.status);
+        setBookings([]);
       }
     } catch (error) {
-      // Backend is not available, fall back to demo mode
-      console.log("Backend not available, using demo data");
+      console.error("Error fetching bookings:", error);
+      setBookings([]);
     }
-
-    // Fallback to mock data for demo purposes (either due to error or non-ok response)
-    setIsDemoMode(true);
-    const mockBookings = [
-      {
-        id: 1,
-        pickup_location: "Dhaka Medical College Hospital",
-        destination: "Apollo Hospital, Dhaka",
-        patient_name: "Ahmed Rahman",
-        patient_phone: "01700000001",
-        booking_type: "Emergency",
-        status: "pending",
-        distance: 12.5,
-        created_at: new Date().toISOString(),
-      },
-      {
-        id: 2,
-        pickup_location: "Square Hospital, Dhaka",
-        destination: "Holy Family Red Crescent Hospital",
-        patient_name: "Fatima Khatun",
-        patient_phone: "01700000002",
-        booking_type: "Scheduled",
-        status: "pending",
-        distance: 8.3,
-        created_at: new Date().toISOString(),
-      },
-      {
-        id: 3,
-        pickup_location: "Mirpur General Hospital",
-        destination: "National Institute of Cardiovascular Diseases",
-        patient_name: "Mohammad Ali",
-        patient_phone: "01700000003",
-        booking_type: "Emergency",
-        status: "pending",
-        distance: 15.7,
-        created_at: new Date().toISOString(),
-      },
-    ];
-
-    setBookings(mockBookings);
   };
 
   const acceptBooking = async (bookingId) => {
@@ -135,29 +97,15 @@ export default function DriverDashboard() {
         alert("Booking accepted successfully!");
         setAcceptingBooking(null);
         return;
+      } else {
+        console.error("Failed to accept booking:", response.status);
+        alert("Failed to accept booking. Please try again.");
       }
     } catch (error) {
-      console.log(
-        "Backend not available, using demo mode for booking acceptance"
+      console.error("Error accepting booking:", error);
+      alert(
+        "Failed to accept booking. Please check your connection and try again."
       );
-    }
-
-    // Demo mode - simulate accepting booking
-    const acceptedBooking = bookings.find((b) => b.id === bookingId);
-    if (acceptedBooking) {
-      // Update booking status to accepted
-      const updatedBooking = {
-        ...acceptedBooking,
-        status: "accepted",
-        driver_id: driver?.id || 1,
-        accepted_at: new Date().toISOString(),
-      };
-
-      setActiveBooking(updatedBooking);
-      setBookings(bookings.filter((b) => b.id !== bookingId));
-      alert("Booking accepted successfully! (Demo Mode)");
-    } else {
-      alert("Failed to accept booking - booking not found");
     }
 
     setAcceptingBooking(null);
@@ -187,17 +135,16 @@ export default function DriverDashboard() {
         alert("Booking completed successfully!");
         fetchBookings(); // Refresh available bookings
         return;
+      } else {
+        console.error("Failed to complete booking:", response.status);
+        alert("Failed to complete booking. Please try again.");
       }
     } catch (error) {
-      console.log(
-        "Backend not available, using demo mode for booking completion"
+      console.error("Error completing booking:", error);
+      alert(
+        "Failed to complete booking. Please check your connection and try again."
       );
     }
-
-    // Demo mode - simulate completing booking
-    setActiveBooking(null);
-    alert("Booking completed successfully! (Demo Mode)");
-    fetchBookings(); // Refresh available bookings
   };
 
   const contactPatient = (phoneNumber) => {
@@ -233,32 +180,14 @@ export default function DriverDashboard() {
         const data = await response.json();
         setMyBids(data.results || data);
         return;
+      } else {
+        console.error("Failed to fetch bids:", response.status);
+        setMyBids([]);
       }
     } catch (error) {
-      console.log("Backend not available for fetching bids");
+      console.error("Error fetching bids:", error);
+      setMyBids([]);
     }
-
-    // Demo mode - mock bids
-    setMyBids([
-      {
-        id: 1,
-        booking_id: 1,
-        bid_amount: 350,
-        status: "pending",
-        notes: "Quick service guaranteed",
-        created_at: new Date().toISOString(),
-        is_winner: false,
-      },
-      {
-        id: 2,
-        booking_id: 2,
-        bid_amount: 280,
-        status: "approved",
-        notes: "Experienced driver",
-        created_at: new Date().toISOString(),
-        is_winner: true,
-      },
-    ]);
   };
 
   const handlePlaceBid = async (bookingId) => {

@@ -1,7 +1,7 @@
 // src/pages/admin/bid-management.js
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import Link from "next/link";
 
 export default function BidManagement() {
   const [bookings, setBookings] = useState([]);
@@ -15,11 +15,11 @@ export default function BidManagement() {
 
   useEffect(() => {
     // Check if admin is logged in
-    const adminData = localStorage.getItem('adminUser');
-    const token = localStorage.getItem('adminToken');
+    const adminData = localStorage.getItem("adminUser");
+    const token = localStorage.getItem("adminToken");
 
     if (!adminData || !token) {
-      router.replace('/admin/login');
+      router.replace("/admin/login");
       return;
     }
 
@@ -28,62 +28,39 @@ export default function BidManagement() {
       setAdmin(parsedAdmin);
       fetchBookingsWithBids();
     } catch (error) {
-      console.error('Error parsing admin data:', error);
-      router.replace('/admin/login');
+      console.error("Error parsing admin data:", error);
+      router.replace("/admin/login");
     }
   }, [router]);
 
   const fetchBookingsWithBids = async () => {
     try {
-      const token = localStorage.getItem('adminToken');
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000";
-      
+      const token = localStorage.getItem("adminToken");
+      const apiBaseUrl =
+        process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000";
+
       const response = await fetch(`${apiBaseUrl}/api/bookings/`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
       });
 
       if (response.ok) {
         const data = await response.json();
-        setBookings(data.filter(booking => booking.status === 'open' || booking.status === 'pending'));
+        setBookings(
+          data.filter(
+            (booking) =>
+              booking.status === "open" || booking.status === "pending"
+          )
+        );
       } else {
-        console.error('Failed to fetch bookings');
-        // Demo data for testing
-        setBookings([
-          {
-            id: 1,
-            patient_name: "John Doe",
-            pickup_location: "Dhaka Medical College Hospital",
-            destination: "United Hospital, Gulshan",
-            booking_type: "Emergency",
-            status: "open",
-            created_at: new Date().toISOString(),
-            estimated_fare: 500,
-            user: {
-              full_name: "Ahmed Rahman",
-              phone_number: "+8801712345678"
-            }
-          },
-          {
-            id: 2,
-            patient_name: "Jane Smith", 
-            pickup_location: "Square Hospital",
-            destination: "Apollo Hospital",
-            booking_type: "Scheduled",
-            status: "pending",
-            created_at: new Date().toISOString(),
-            estimated_fare: 350,
-            user: {
-              full_name: "Fatima Khatun",
-              phone_number: "+8801987654321"
-            }
-          }
-        ]);
+        console.error("Failed to fetch bookings:", response.status);
+        setBookings([]);
       }
     } catch (error) {
-      console.error('Error fetching bookings:', error);
+      console.error("Error fetching bookings:", error);
+      setBookings([]);
     } finally {
       setLoading(false);
     }
@@ -97,57 +74,12 @@ export default function BidManagement() {
         const data = await response.json();
         setBids(data.bids || []);
       } else {
-        // Demo bids data
-        setBids([
-          {
-            id: 1,
-            booking_id: bookingId,
-            driver: {
-              full_name: "Driver Ahmed",
-              phone_number: "+8801712345678",
-              rating: 4.8,
-              total_rides: 245,
-              license_number: "DH-123456"
-            },
-            amount: 450,
-            note: "Experienced driver with medical emergency experience. Available immediately.",
-            created_at: new Date().toISOString(),
-            status: "pending"
-          },
-          {
-            id: 2,
-            booking_id: bookingId,
-            driver: {
-              full_name: "Driver Mohammad",
-              phone_number: "+8801887654321",
-              rating: 4.6,
-              total_rides: 189,
-              license_number: "DH-789012"
-            },
-            amount: 380,
-            note: "Quick and safe transport guaranteed. Special care for patients.",
-            created_at: new Date().toISOString(),
-            status: "pending"
-          },
-          {
-            id: 3,
-            booking_id: bookingId,
-            driver: {
-              full_name: "Driver Karim",
-              phone_number: "+8801555666777",
-              rating: 4.9,
-              total_rides: 312,
-              license_number: "DH-345678"
-            },
-            amount: 420,
-            note: "Professional medical transport service with oxygen support available.",
-            created_at: new Date().toISOString(),
-            status: "pending"
-          }
-        ]);
+        console.error("Failed to fetch bids:", response.status);
+        setBids([]);
       }
     } catch (error) {
-      console.error('Error fetching bids:', error);
+      console.error("Error fetching bids:", error);
+      setBids([]);
     } finally {
       setLoadingBids(false);
     }
@@ -166,29 +98,31 @@ export default function BidManagement() {
   const approveBid = async (bidId) => {
     setApprovingBid(bidId);
     try {
-      const token = localStorage.getItem('adminToken');
+      const token = localStorage.getItem("adminToken");
       const response = await fetch(`/api/admin/approve-bid`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           bid_id: bidId,
-          booking_id: selectedBooking.id
+          booking_id: selectedBooking.id,
         }),
       });
 
       if (response.ok) {
-        alert('Bid approved successfully! Booking has been assigned to the driver.');
+        alert(
+          "Bid approved successfully! Booking has been assigned to the driver."
+        );
         closeBidsModal();
         fetchBookingsWithBids(); // Refresh bookings list
       } else {
-        alert('Failed to approve bid. Please try again.');
+        alert("Failed to approve bid. Please try again.");
       }
     } catch (error) {
-      console.error('Error approving bid:', error);
-      alert('Error approving bid. Please try again.');
+      console.error("Error approving bid:", error);
+      alert("Error approving bid. Please try again.");
     } finally {
       setApprovingBid(null);
     }
@@ -196,22 +130,28 @@ export default function BidManagement() {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'open': return '#28a745';
-      case 'pending': return '#ffc107';
-      case 'confirmed': return '#17a2b8';
-      case 'completed': return '#6c757d';
-      case 'cancelled': return '#dc3545';
-      default: return '#6c757d';
+      case "open":
+        return "#28a745";
+      case "pending":
+        return "#ffc107";
+      case "confirmed":
+        return "#17a2b8";
+      case "completed":
+        return "#6c757d";
+      case "cancelled":
+        return "#dc3545";
+      default:
+        return "#6c757d";
     }
   };
 
   const formatDateTime = (dateString) => {
-    return new Date(dateString).toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Date(dateString).toLocaleString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -235,8 +175,12 @@ export default function BidManagement() {
             animation: spin 1s linear infinite;
           }
           @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from {
+              transform: rotate(0deg);
+            }
+            to {
+              transform: rotate(360deg);
+            }
           }
         `}</style>
       </div>
@@ -248,7 +192,9 @@ export default function BidManagement() {
       {/* Header */}
       <header className="admin-header">
         <div className="header-content">
-          <Link href="/admin/dashboard" className="back-btn">← Admin Dashboard</Link>
+          <Link href="/admin/dashboard" className="back-btn">
+            ← Admin Dashboard
+          </Link>
           <h1>🏆 Bid Management</h1>
           <div className="admin-info">
             <span>Admin: {admin?.full_name}</span>
@@ -269,14 +215,14 @@ export default function BidManagement() {
           <div className="stat-card">
             <div className="stat-icon">💰</div>
             <div className="stat-info">
-              <h3>{bookings.filter(b => b.status === 'open').length}</h3>
+              <h3>{bookings.filter((b) => b.status === "open").length}</h3>
               <p>Open for Bidding</p>
             </div>
           </div>
           <div className="stat-card">
             <div className="stat-icon">⏳</div>
             <div className="stat-info">
-              <h3>{bookings.filter(b => b.status === 'pending').length}</h3>
+              <h3>{bookings.filter((b) => b.status === "pending").length}</h3>
               <p>Pending Approval</p>
             </div>
           </div>
@@ -286,7 +232,7 @@ export default function BidManagement() {
       {/* Bookings List */}
       <div className="bookings-container">
         <h2>📋 Bookings Requiring Bid Review</h2>
-        
+
         {bookings.length === 0 ? (
           <div className="no-bookings">
             <div className="no-bookings-icon">✅</div>
@@ -299,7 +245,7 @@ export default function BidManagement() {
               <div key={booking.id} className="booking-card">
                 <div className="booking-header">
                   <h3>🚑 Booking #{booking.id}</h3>
-                  <span 
+                  <span
                     className="status-badge"
                     style={{ backgroundColor: getStatusColor(booking.status) }}
                   >
@@ -343,12 +289,13 @@ export default function BidManagement() {
                       <strong>Est. Fare:</strong> ৳{booking.estimated_fare}
                     </div>
                     <div className="meta-item">
-                      <strong>Created:</strong> {formatDateTime(booking.created_at)}
+                      <strong>Created:</strong>{" "}
+                      {formatDateTime(booking.created_at)}
                     </div>
                   </div>
 
                   <div className="booking-actions">
-                    <button 
+                    <button
                       onClick={() => viewBids(booking)}
                       className="review-bids-btn"
                     >
@@ -368,19 +315,35 @@ export default function BidManagement() {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h3>🏆 Bid Review - Booking #{selectedBooking.id}</h3>
-              <button onClick={closeBidsModal} className="close-btn">✖️</button>
+              <button onClick={closeBidsModal} className="close-btn">
+                ✖️
+              </button>
             </div>
 
             <div className="modal-body">
               <div className="booking-summary">
                 <h4>📍 Booking Details</h4>
                 <div className="summary-grid">
-                  <div><strong>Patient:</strong> {selectedBooking.patient_name}</div>
-                  <div><strong>Type:</strong> {selectedBooking.booking_type}</div>
-                  <div><strong>From:</strong> {selectedBooking.pickup_location}</div>
-                  <div><strong>To:</strong> {selectedBooking.destination}</div>
-                  <div><strong>Requester:</strong> {selectedBooking.user?.full_name}</div>
-                  <div><strong>Contact:</strong> {selectedBooking.user?.phone_number}</div>
+                  <div>
+                    <strong>Patient:</strong> {selectedBooking.patient_name}
+                  </div>
+                  <div>
+                    <strong>Type:</strong> {selectedBooking.booking_type}
+                  </div>
+                  <div>
+                    <strong>From:</strong> {selectedBooking.pickup_location}
+                  </div>
+                  <div>
+                    <strong>To:</strong> {selectedBooking.destination}
+                  </div>
+                  <div>
+                    <strong>Requester:</strong>{" "}
+                    {selectedBooking.user?.full_name}
+                  </div>
+                  <div>
+                    <strong>Contact:</strong>{" "}
+                    {selectedBooking.user?.phone_number}
+                  </div>
                 </div>
               </div>
 
@@ -398,27 +361,45 @@ export default function BidManagement() {
               ) : (
                 <div className="bids-review-section">
                   <h4>🚗 Driver Bids ({bids.length}) - Select Winner</h4>
-                  <p className="review-instruction">👆 Review each bid and approve the best driver for this booking.</p>
-                  
+                  <p className="review-instruction">
+                    👆 Review each bid and approve the best driver for this
+                    booking.
+                  </p>
+
                   <div className="bids-list">
                     {bids
                       .sort((a, b) => a.amount - b.amount) // Sort by lowest bid first
                       .map((bid, index) => (
-                        <div key={bid.id} className={`bid-card ${index === 0 ? 'recommended-bid' : ''}`}>
+                        <div
+                          key={bid.id}
+                          className={`bid-card ${
+                            index === 0 ? "recommended-bid" : ""
+                          }`}
+                        >
                           {index === 0 && (
-                            <div className="recommended-badge">💡 Lowest Bid</div>
+                            <div className="recommended-badge">
+                              💡 Lowest Bid
+                            </div>
                           )}
-                          
+
                           <div className="bid-header">
                             <div className="driver-info">
                               <h5>👨‍💼 {bid.driver.full_name}</h5>
                               <div className="driver-stats">
-                                <span className="rating">⭐ {bid.driver.rating}</span>
-                                <span className="rides">🚗 {bid.driver.total_rides} rides</span>
-                                <span className="license">🪪 {bid.driver.license_number}</span>
+                                <span className="rating">
+                                  ⭐ {bid.driver.rating}
+                                </span>
+                                <span className="rides">
+                                  🚗 {bid.driver.total_rides} rides
+                                </span>
+                                <span className="license">
+                                  🪪 {bid.driver.license_number}
+                                </span>
                               </div>
                               <div className="contact-info">
-                                <span className="phone">📞 {bid.driver.phone_number}</span>
+                                <span className="phone">
+                                  📞 {bid.driver.phone_number}
+                                </span>
                               </div>
                             </div>
                             <div className="bid-amount">
@@ -439,12 +420,14 @@ export default function BidManagement() {
                               <span>🕒 {formatDateTime(bid.created_at)}</span>
                               <span className="bid-status">{bid.status}</span>
                             </div>
-                            <button 
+                            <button
                               onClick={() => approveBid(bid.id)}
                               disabled={approvingBid === bid.id}
                               className="approve-btn"
                             >
-                              {approvingBid === bid.id ? '⏳ Approving...' : '✅ Approve & Assign'}
+                              {approvingBid === bid.id
+                                ? "⏳ Approving..."
+                                : "✅ Approve & Assign"}
                             </button>
                           </div>
                         </div>
@@ -459,7 +442,10 @@ export default function BidManagement() {
                 ❌ Close Review
               </button>
               <div className="approval-note">
-                <small>💡 Approving a bid will assign the booking to that driver and notify all parties.</small>
+                <small>
+                  💡 Approving a bid will assign the booking to that driver and
+                  notify all parties.
+                </small>
               </div>
             </div>
           </div>
@@ -475,7 +461,7 @@ export default function BidManagement() {
 
         .admin-header {
           background: white;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
           padding: 1.5rem 2rem;
           margin-bottom: 2rem;
         }
@@ -533,13 +519,13 @@ export default function BidManagement() {
           display: flex;
           align-items: center;
           gap: 1rem;
-          box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
           transition: all 0.3s ease;
         }
 
         .stat-card:hover {
           transform: translateY(-3px);
-          box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
         }
 
         .stat-icon {
@@ -575,7 +561,7 @@ export default function BidManagement() {
           background: white;
           padding: 4rem 2rem;
           border-radius: 20px;
-          box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
 
         .no-bookings-icon {
@@ -593,13 +579,13 @@ export default function BidManagement() {
           background: white;
           border-radius: 20px;
           overflow: hidden;
-          box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
           transition: all 0.3s ease;
         }
 
         .booking-card:hover {
           transform: translateY(-5px);
-          box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
         }
 
         .booking-header {
@@ -617,7 +603,7 @@ export default function BidManagement() {
         }
 
         .status-badge {
-          background: rgba(255,255,255,0.2);
+          background: rgba(255, 255, 255, 0.2);
           padding: 5px 15px;
           border-radius: 20px;
           font-size: 0.85rem;
@@ -702,7 +688,7 @@ export default function BidManagement() {
 
         .review-bids-btn:hover {
           transform: translateY(-2px);
-          box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
         /* Modal Styles */
@@ -712,7 +698,7 @@ export default function BidManagement() {
           left: 0;
           right: 0;
           bottom: 0;
-          background: rgba(0,0,0,0.8);
+          background: rgba(0, 0, 0, 0.8);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -727,7 +713,7 @@ export default function BidManagement() {
           max-width: 900px;
           max-height: 90vh;
           overflow-y: auto;
-          box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
 
         .modal-header {
@@ -746,7 +732,7 @@ export default function BidManagement() {
         }
 
         .close-btn {
-          background: rgba(255,255,255,0.2);
+          background: rgba(255, 255, 255, 0.2);
           border: none;
           color: white;
           font-size: 1.2rem;
@@ -761,7 +747,7 @@ export default function BidManagement() {
         }
 
         .close-btn:hover {
-          background: rgba(255,255,255,0.3);
+          background: rgba(255, 255, 255, 0.3);
         }
 
         .modal-body {
@@ -947,7 +933,7 @@ export default function BidManagement() {
 
         .approve-btn:hover:not(:disabled) {
           transform: translateY(-2px);
-          box-shadow: 0 5px 15px rgba(40,167,69,0.3);
+          box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
         }
 
         .approve-btn:disabled {
