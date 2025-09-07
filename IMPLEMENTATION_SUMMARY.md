@@ -108,7 +108,7 @@
 - **Pending**: Yellow/Orange background
 - **Accepted**: Green background
 - **Completed**: Blue background
-- **Cancelled**: Red background
+- **Cancelled**: Red background 
 
 ### Information Display:
 
